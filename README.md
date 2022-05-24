@@ -3,7 +3,7 @@ A web-based retail point of sale system for local game stores and other small bu
 
 **Link to project:** https://anitanotto.github.io/magical-merchant/
 
-![alt tag](boost.png)
+![alt tag](magicalmerchant.png)
 
 ## How It's Made:
 

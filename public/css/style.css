@@ -1,0 +1,38 @@
+.header {
+    height: 6%;
+}
+
+.table th {
+    border: none;
+}
+
+.top-row {
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.offcanvas, .order-info, .item-info {
+    width: 50%;
+}
+
+.order-footer {
+    height: 6vh;
+}
+
+/* Allow table to scroll */
+.table-fixed thead {
+  width: 97%;
+}
+.inputHeader{width:100%}
+.table-fixed tbody {
+  height: 80.3vh;
+  overflow-y: auto;
+  width: 100%;
+}
+.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
+  display: block;
+}
+.table-fixed tbody td, .table-fixed thead > tr> th {
+  float: left;
+  border-bottom-width: 0;
+}
+/* -------------------- */

@@ -1,0 +1,115 @@
+<%- include('partials/header') -%>
+
+<div class="container-fluid">
+    <div class="header top-row row">
+        <div class="col-6 g=0">
+            <nav>
+                <h1 id="<%= order[0]._id %>">Order #<%= order[0]._id %></h1>
+            </nav>
+        </div>
+        <div class="col-6 g=0">
+            <nav class="navbar justify-content-end">
+                <a class="menu btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvas" role="button">Functions</a>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasLabel">Functions</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas">
+                    </div>
+                    <div class="offcanvas-body">
+                        <div>Placeholder</div>
+                        <a href="/logout" class="col-3 btn btn-primary">Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="order-info col-6 g-0">
+
+<div class="container">
+  <div class="row">
+      <div class="panel panel-default">
+        <table id="orderDetails" class="table table-fixed table-hover">
+          <thead>
+            <tr>
+              <th class="col-sm-4">Item</th><th class="col-sm-2">Price</th><th class="col-sm-2">Tax</th><th class="col-sm-2">Quantity</th><th class="col-sm-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < order[0].children.length; i++) { %>
+            <% let item = order[0].children[i] %>
+            <tr id="<%=item.code%>">
+            <td class="col-sm-4"><%= item.name %></td>
+            <td class="col-sm-2"><%= item.price %></td>
+            <td class="col-sm-2"><%= item.tax %></td>
+            <td class="col-sm-2"><%= item.quantity %></td>
+            <td class="col-sm-2"><%= item.quantity * (item.price + item.tax) %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+
+
+            <ul class="order-footer list-group list-group-horizontal justify-content-end">
+                <li class="list-group-item flex-fill">Total Items: <%= order[0].children.reduce((a,b) => a + b.quantity,0) %></li>
+                <li class="list-group-item flex-fill">Subtotal: <%= order[0].subtotal %></li>
+                <li class="list-group-item flex-fill">Tax: <%= order[0].tax %></li>
+                <li class="list-group-item flex-fill">Balance: <%= order[0].total %></li>
+            </ul>
+        </div>
+
+
+        <div class="item-info col-6">
+
+            <div class="card">
+                <div class="card-body">
+                <% itemDetails = order[0].children[(order[0].children.length-1)] %>
+                <p>Name: <span id="itemName"><%= itemDetails.name %></span></p>
+                <p>Price: <span id="itemPrice"><%= itemDetails.price %></span></p>
+                <p>Tax: <span id="itemTax"><%= itemDetails.tax %></span></p>
+                <p>Quantity: <span id="itemQuantity"><%= itemDetails.quantity %></span></p>
+                <p>Total: <span id="itemTotal"><%= (itemDetails.tax + itemDetails.price) * itemDetails.quantity %></span></p>
+                <p>Code: <span id="itemCode"><%= itemDetails.code %></span></p>
+                <a class="btn btn-primary">Void Item</a>
+                <a class="btn btn-primary">Void Line</a>
+                <a class="btn btn-primary">Price Override</a>
+            </div>
+
+<div class="card">
+<div class="card-body">
+<form action="/pos/addItemToOrder/<%= order[0]._id %>?_method=PUT" method="POST">
+    <!-- <label for="searchInput" class="form-label">Search</label> -->
+    <div class="input-group">
+          <input type="text" id="searchInput" name="searchInput" class="form-control" >
+          <div class="form-floating">
+            <select name="searchCategory" class="form-select">
+              <option value="code">Item Code</option>
+              <option value="name">Item Name</option>
+            </select>
+            <label for="searchCategory" class="form-label">Search by:</label>
+          </div>
+    <div class="form-floating">
+    <input type="number" name="formQuantity" value="1" min="1" max="99" class="form-control">
+    <label for="formQuantity" class="form-label">Quantity:</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Add to Order</button>
+    </div>
+</form>
+</div>
+</div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+<script src="/js/pos.js"></script>
+<%- include('partials/footer') -%>

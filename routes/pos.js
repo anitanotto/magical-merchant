@@ -10,6 +10,10 @@ router.get("/:id", ensureAuth, posController.getPost);
 router.post("/createPost", upload.single("file"), posController.createPost);
 
 router.put("/addItemToOrder/:id", posController.addItemToOrder);
+router.put("/voidItem/:orderId/:itemId/", posController.voidItem);
+router.put("/voidLine/:orderId/:itemId/", posController.voidLine);
+router.put("/priceOverride/:orderId/:itemId/", posController.priceOverride);
+router.put("/completeOrder/:orderId", posController.completeOrder);
 
 router.delete("/deletePost/:id", posController.deletePost);
 

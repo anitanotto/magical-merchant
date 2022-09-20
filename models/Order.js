@@ -6,11 +6,11 @@ const Item = new mongoose.Schema({
     required: true,
   },
   price: {
-    type: Number,
+    type: mongoose.Decimal128,
     required: true,
   },
   tax: {
-    type: Number,
+    type: mongoose.Decimal128,
     required: true,
   },
   quantity: {
@@ -18,7 +18,7 @@ const Item = new mongoose.Schema({
     required: true,
   },
   code: {
-    type: Number,
+    type: String,
     required: false,
   }
 })
@@ -35,19 +35,19 @@ const OrderSchema = new mongoose.Schema({
   },
   children: [Item],
   subtotal: {
-      type: Number,
+      type: mongoose.Decimal128,
       required: true,
-      default: 0,
+      default: '0.00',
   },
   tax: {
-      type: Number,
+      type: mongoose.Decimal128,
       required: true,
-      default: 0,
+      default:  '0.00',
   },
   total: {
-      type: Number,
+      type: mongoose.Decimal128,
       required: true,
-      default: 0,
+      default: '0.00',
   },
   completed: {
       type: Boolean,

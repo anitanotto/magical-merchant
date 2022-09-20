@@ -4,7 +4,7 @@
     <div class="header top-row row">
         <div class="col-6 g=0">
             <nav>
-                <h1 id="<%= order[0]._id %>">Order #<%= order[0]._id %></h1>
+                <h1 id="<%= order._id %>">Order #<%= order._id %></h1>
             </nav>
         </div>
         <div class="col-6 g=0">
@@ -25,27 +25,27 @@
     </div>
 
 
-    <div class="row">
-        <div class="order-info col-6 g-0">
+    <div class="row mobile-column">
+        <div class="order-info col-6 g-0-md">
 
 <div class="container">
-  <div class="row">
+  <div class="row-md">
       <div class="panel panel-default">
         <table id="orderDetails" class="table table-fixed table-hover">
           <thead>
-            <tr>
-              <th class="col-sm-4">Item</th><th class="col-sm-2">Price</th><th class="col-sm-2">Tax</th><th class="col-sm-2">Quantity</th><th class="col-sm-2">Total</th>
+            <tr class="flex-fill">
+              <th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
             </tr>
           </thead>
           <tbody>
-            <% for (let i = 0; i < order[0].children.length; i++) { %>
-            <% let item = order[0].children[i] %>
-            <tr id="<%=item.code%>">
+            <% for (let i = 0; i < order.children.length; i++) { %>
+            <% let item = order.children[i] %>
+            <tr id="<%= item._id %>" class="<%=item.code%> <%= i === order.children.length -1 ? 'table-active' : ''%>">
             <td class="col-sm-4"><%= item.name %></td>
             <td class="col-sm-2"><%= item.price %></td>
             <td class="col-sm-2"><%= item.tax %></td>
             <td class="col-sm-2"><%= item.quantity %></td>
-            <td class="col-sm-2"><%= item.quantity * (item.price + item.tax) %></td>
+            <td class="col-sm-2"><%= Big(item.price).add(Big(item.tax)).times(item.quantity).toFixed(2) %></td>
             </tr>
             <% } %>
           </tbody>
@@ -56,34 +56,53 @@
 
 
 
-            <ul class="order-footer list-group list-group-horizontal justify-content-end">
-                <li class="list-group-item flex-fill">Total Items: <%= order[0].children.reduce((a,b) => a + b.quantity,0) %></li>
-                <li class="list-group-item flex-fill">Subtotal: <%= order[0].subtotal %></li>
-                <li class="list-group-item flex-fill">Tax: <%= order[0].tax %></li>
-                <li class="list-group-item flex-fill">Balance: <%= order[0].total %></li>
+            <ul class="order-footer list-group list-group-horizontal">
+                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Items:</div><%= order.children.reduce((a,b) => a + b.quantity,0) %></div></li>
+                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Subtotal:</div><%= order.subtotal %></div></li>
+                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Tax:</div><%= order.tax %></div></li>
+                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Balance:</div><%= order.total %></div></li>
             </ul>
         </div>
 
 
-        <div class="item-info col-6">
+        <div class="item-info col-6 d-flex flex-column justify-content-between">
 
             <div class="card">
+                <% itemDetails = order.children[(order.children.length-1)] %>
                 <div class="card-body">
-                <% itemDetails = order[0].children[(order[0].children.length-1)] %>
-                <p>Name: <span id="itemName"><%= itemDetails.name %></span></p>
-                <p>Price: <span id="itemPrice"><%= itemDetails.price %></span></p>
-                <p>Tax: <span id="itemTax"><%= itemDetails.tax %></span></p>
-                <p>Quantity: <span id="itemQuantity"><%= itemDetails.quantity %></span></p>
-                <p>Total: <span id="itemTotal"><%= (itemDetails.tax + itemDetails.price) * itemDetails.quantity %></span></p>
-                <p>Code: <span id="itemCode"><%= itemDetails.code %></span></p>
-                <a class="btn btn-primary">Void Item</a>
-                <a class="btn btn-primary">Void Line</a>
-                <a class="btn btn-primary">Price Override</a>
+                <h2 id="<%= itemDetails ? itemDetails._id : ""%>">Item Details</h2>
+                <p class="details">Name: <span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
+                <p class="details">Price: <span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
+                <p class="details">Tax: <span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
+                <p class="details">Quantity: <span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
+                <p class="details">Total: <span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                <p class="details">Code: <span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
+                <div class="row row-cols-auto">
+                <form class="col-2-md" id="voidItem" action="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <button class=" btn btn-primary" type="submit">Void Item</button>
+                </form>
+                <form class="col-2-md" id="voidLine" action="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <button class=" btn btn-primary" type="submit">Void Line</button>
+                </form>
+                <form class="row row-cols-auto" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <div class="input-group">
+                    <input class="form-control" required name="price" type="number" step="0.01" min="0" max="9999.99" placeholder="0.00">
+                    <button class="btn btn-primary" type="submit">Price Override</button>
+                    </div>
+                </form>
+                </div>
             </div>
+
+
+
+
+
+        </div>
+
 
 <div class="card">
 <div class="card-body">
-<form action="/pos/addItemToOrder/<%= order[0]._id %>?_method=PUT" method="POST">
+<form action="/pos/addItemToOrder/<%= order._id %>?_method=PUT" method="POST">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
     <div class="input-group">
           <input type="text" id="searchInput" name="searchInput" class="form-control" >
@@ -96,19 +115,24 @@
           </div>
     <div class="form-floating">
     <input type="number" name="formQuantity" value="1" min="1" max="99" class="form-control">
-    <label for="formQuantity" class="form-label">Quantity:</label>
+    <label for="formQuantity" class="form-label">Qty:</label>
     </div>
     <button type="submit" class="btn btn-primary">Add to Order</button>
     </div>
 </form>
+
 </div>
 </div>
 
 
 
-
-
-        </div>
+<div class="card item-footer">
+    <div class="card-body">
+        <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
+            <button type="submit" class="btn btn-success">Complete Order</button>
+        </form>
+    </div>
+</div>
     </div>
 </div>
 <script src="/js/pos.js"></script>

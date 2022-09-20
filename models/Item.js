@@ -6,11 +6,11 @@ const ItemSchema = new mongoose.Schema({
     required: true,
   },
   price: {
-    type: Number,
+    type: mongoose.Decimal128,
     required: true,
   },
   tax: {
-    type: Number,
+    type: mongoose.Decimal128,
     required: true,
   },
   quantity: {
@@ -19,7 +19,7 @@ const ItemSchema = new mongoose.Schema({
     default: 1,
   },
   code: {
-    type: Number,
+    type: String,
     required: false,
   }
 })

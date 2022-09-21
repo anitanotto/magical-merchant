@@ -2,6 +2,8 @@ const cloudinary = require("../middleware/cloudinary");
 const Order = require("../models/Order");
 const Item = require("../models/Item");
 const Big = require('big.js')
+const stripe = require('stripe')(process.env.STRIPE_KEY)
+const QRcode = require('qrcode-svg')
 
 module.exports = {
   getPos: async (req, res) => {
@@ -185,12 +187,54 @@ module.exports = {
   },
   completeOrder: async(req,res) => {
     try {
+      
       const order = await Order.findOne({ _id: req.params.orderId })
+      let priceId = null
+     
+      const product = await stripe.products.create({
+          name: 'Order #' + order.id,
+          description: 'test',
+          id: order.id,
+      })
+
+      const price = await stripe.prices.create({
+          unit_amount: Number(order.total.toString().split('.').join('')),
+          currency: 'usd',
+          product: product.id,
+      })
+
+      const paymentLink = await stripe.paymentLinks.create({
+          line_items: [{price: price.id, quantity: 1}],
+      })
+
+      res.send(new QRcode(paymentLink.url).svg())
+      
+      /*
+      stripe.products.create({
+          name: 'Order #' + order.id,
+          description: 'test',
+          id: order.id,
+      }).then(product => {
+          stripe.prices.create({
+              unit_amount: Number(order.total.toString().split('.').join('')),
+              currency: 'usd',
+              product: product.id,
+          }).then(price => {
+              console.log('Success! Product ID: ' + product.id)
+              console.log('Success! Price ID: ' + price.id)
+              priceId = price.id
+          })
+      })
+      */
+    
+
+      // Testing for payment link.
+      /*
       order.completed = true
       console.log(`Order #${req.params.orderId} completed!`)
       await order.save()
       res.redirect('/pos');
-        
+      */  
     } catch (err) {
         console.log(err);
     }

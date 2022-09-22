@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@algolia/autocomplete-theme-classic": "^1.7.1",
     "@stripe/react-stripe-js": "^1.10.0",
     "bcrypt": "^5.0.1",
     "big.js": "^6.2.1",

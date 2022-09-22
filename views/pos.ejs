@@ -34,7 +34,6 @@
         <table id="orderDetails" class="table table-fixed table-hover">
           <thead>
             <tr class="flex-fill">
-              <th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -105,7 +104,8 @@
 <form action="/pos/addItemToOrder/<%= order._id %>?_method=PUT" method="POST">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
     <div class="input-group">
-          <input type="text" id="searchInput" name="searchInput" class="form-control" >
+          <div id="autocomplete"></div>
+          <input type="text" id="searchInput" name="searchInput" class="form-control" autocomplete="off">
           <div class="form-floating">
             <select name="searchCategory" class="form-select">
               <option value="code">Item Code</option>
@@ -135,5 +135,12 @@
 </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
+<script>
+  const { autocomplete } = window['@algolia/autocomplete-js'];
+</script>
+
 <script src="/js/pos.js"></script>
+
 <%- include('partials/footer') -%>

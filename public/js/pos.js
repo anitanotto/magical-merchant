@@ -1,3 +1,4 @@
+
 // Highlights active row in the order details table and updates the item details with data from the new active row.
 const orderDetails = document.querySelector('#orderDetails')
 
@@ -54,3 +55,16 @@ function updateItemActions() {
     document.querySelector('#voidLine').action = `/pos/voidLine/${orderId}/${itemId}/?_method=PUT`
     document.querySelector('#priceOverride').action = `/pos/priceOverride/${orderId}/${itemId}/?_method=PUT`
 }
+
+
+// Autocomplete
+autocomplete({
+  container: '#autocomplete',
+  placeholder: 'Search for products',
+  async getSources() {
+    let items = await fetch('/items')
+    items = await items.json()
+    console.log(items)
+    return items;
+  },
+});

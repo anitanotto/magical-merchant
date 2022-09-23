@@ -60,11 +60,47 @@ function updateItemActions() {
 // Autocomplete
 autocomplete({
   container: '#autocomplete',
-  placeholder: 'Search for products',
-  async getSources() {
-    let items = await fetch('/items')
-    items = await items.json()
-    console.log(items)
-    return items;
+  placeholder: 'Search...',
+  autoFocus: true,
+  inputWrapper: 'form-control removeBorder',
+  classNames: { 
+      inputWrapper: 'form-control squareRight',
+      detachedSearchButtonIcon: 'hidden',
+      clearButton: 'hidden',
+      form: 'removeBorder',
+      submitButton: 'hidden',
+      detachedSearchButton: 'fixedHeight squareRight correctBorder',
+      detachedSearchButtonPlaceholder: 'fixedWidth squareRight',
+  },
+  onStateChange({ state }) {
+    if (state.query !== '') {
+      document.querySelector('#searchInput').value = state.query
+      const mobileText = document.querySelector('.aa-DetachedSearchButtonPlaceholder')
+      if (mobileText != null) {
+          mobileText.innerText = state.query
+          mobileText.style.color = 'black'
+      }
+    }
+  },
+  getSources() {
+    return [{
+        sourceId: 'items',
+        async getItems({ query }) {
+            let items = await fetch('/items') 
+            items = await items.json()
+            
+            return items.filter(({ name }) => 
+                name.toLowerCase().includes(query.toLowerCase())
+                    );
+        },
+        getItemInputValue({ item }) {
+            return item.name
+        },
+templates: {
+          item({ item }) {
+            return item.name;
+          },
+},
+    }]
   },
 });

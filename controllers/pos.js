@@ -9,7 +9,6 @@ module.exports = {
   getPos: async (req, res) => {
     try {
       let order = await Order.findOne({ user: req.user._id, completed: false })
-      console.log(order)
       if (order == null) {
           order = await Order.create({ user: req.user.id })
       }
@@ -20,6 +19,7 @@ module.exports = {
   },
   addItemToOrder: async (req, res) => {
     try {
+        console.log(req.body)
         let order = await Order.findOne({ _id: req.params.id })
 
         let item = null
@@ -59,11 +59,8 @@ module.exports = {
 
             // Update order values dependent on children
             order.subtotal = order.children.reduce((a,b) => Big(a).plus(Big(b.price)).times(Big(b.quantity)),Big('0.00')).toFixed(2)
-            console.log(order.subtotal)
             order.tax = order.children.reduce((a,b) => Big(a).plus(Big(b.tax)).times(Big(b.quantity)), Big('0.00')).toFixed(2)
-            console.log(order.tax)
             order.total = (Big(order.subtotal).plus(Big(order.tax))).toFixed(2)
-            console.log(order.total)
 
             await order.save()
         } else {
@@ -99,11 +96,8 @@ module.exports = {
 
         // Update order values dependent on children
         order.subtotal = order.children.reduce((a,b) => Big(a).plus(Big(b.price)).times(Big(b.quantity)),Big('0.00')).toFixed(2)
-        console.log(order.subtotal)
         order.tax = order.children.reduce((a,b) => Big(a).plus(Big(b.tax)).times(Big(b.quantity)), Big('0.00')).toFixed(2)
-        console.log(order.tax)
         order.total = (Big(order.subtotal).plus(Big(order.tax))).toFixed(2)
-        console.log(order.total)
 
          await order.save()
 
@@ -129,11 +123,8 @@ module.exports = {
              
         // Update order values dependent on children
         order.subtotal = order.children.reduce((a,b) => Big(a).plus(Big(b.price)).times(Big(b.quantity)),Big('0.00')).toFixed(2)
-        console.log(order.subtotal)
         order.tax = order.children.reduce((a,b) => Big(a).plus(Big(b.tax)).times(Big(b.quantity)), Big('0.00')).toFixed(2)
-        console.log(order.tax)
         order.total = (Big(order.subtotal).plus(Big(order.tax))).toFixed(2)
-        console.log(order.total)
          await order.save()
 
 
@@ -168,7 +159,6 @@ module.exports = {
              
          // Set item's new price & recalculate total based on quantity in order
          item.price = Big(newPrice).toFixed(2)
-             console.log(item.price)
          item.total = Big(item.price).plus(Big(item.tax)).times(Big(item.quantity))
          await order.save()
          } else {
@@ -209,32 +199,6 @@ module.exports = {
 
       res.send(new QRcode(paymentLink.url).svg())
       
-      /*
-      stripe.products.create({
-          name: 'Order #' + order.id,
-          description: 'test',
-          id: order.id,
-      }).then(product => {
-          stripe.prices.create({
-              unit_amount: Number(order.total.toString().split('.').join('')),
-              currency: 'usd',
-              product: product.id,
-          }).then(price => {
-              console.log('Success! Product ID: ' + product.id)
-              console.log('Success! Price ID: ' + price.id)
-              priceId = price.id
-          })
-      })
-      */
-    
-
-      // Testing for payment link.
-      /*
-      order.completed = true
-      console.log(`Order #${req.params.orderId} completed!`)
-      await order.save()
-      res.redirect('/pos');
-      */  
     } catch (err) {
         console.log(err);
     }

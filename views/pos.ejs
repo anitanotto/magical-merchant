@@ -4,12 +4,12 @@
     <div class="header top-row row">
         <div class="col-6 g=0">
             <nav>
-                <h1 id="<%= order._id %>">Order #<%= order._id %></h1>
+                <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
             </nav>
         </div>
         <div class="col-6 g=0">
             <nav class="navbar justify-content-end">
-                <a class="menu btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvas" role="button">Functions</a>
+                <a class="menu btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvas" role="button">Menu</a>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasLabel">Functions</h5>
@@ -17,7 +17,7 @@
                     </div>
                     <div class="offcanvas-body">
                         <div>Placeholder</div>
-                        <a href="/logout" class="col-3 btn btn-primary">Logout</a>
+                        <a href="/logout" class="btn btn-primary">Logout</a>
                     </div>
                 </div>
             </nav>
@@ -28,12 +28,13 @@
     <div class="row mobile-column">
         <div class="order-info col-6 g-0-md">
 
-<div class="container">
+<div class="container unpadSides">
   <div class="row-md">
       <div class="panel panel-default">
         <table id="orderDetails" class="table table-fixed table-hover">
           <thead>
-            <tr class="flex-fill">
+            <tr>
+<th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -48,6 +49,14 @@
             </tr>
             <% } %>
           </tbody>
+          <tfoot>
+            <tr class="d-flex justify-content-between">
+            <td class="tablefoot"><div class="fw-bold">Items:</div> <%= order.children.reduce((a,b) => a + b.quantity,0) %></td>
+            <td class="tablefoot"><div class="fw-bold">Subtotal:</div> <%= order.subtotal %></td>
+            <td class="tablefoot"><div class="fw-bold">Tax:</div> <%= order.tax %></td>
+            <td class="tablefoot"><div class="fw-bold">Balance:</div> <%= order.total %></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
   </div>
@@ -55,12 +64,6 @@
 
 
 
-            <ul class="order-footer list-group list-group-horizontal">
-                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Items:</div><%= order.children.reduce((a,b) => a + b.quantity,0) %></div></li>
-                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Subtotal:</div><%= order.subtotal %></div></li>
-                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Tax:</div><%= order.tax %></div></li>
-                <li class="list-group-item d-flex flex-fill justify-content-around align-items-start"><div class="ms-2 me-auto"><div class="fw-bold">Balance:</div><%= order.total %></div></li>
-            </ul>
         </div>
 
 
@@ -69,24 +72,24 @@
             <div class="card">
                 <% itemDetails = order.children[(order.children.length-1)] %>
                 <div class="card-body">
-                <h2 id="<%= itemDetails ? itemDetails._id : ""%>">Item Details</h2>
-                <p class="details">Name: <span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
-                <p class="details">Price: <span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
-                <p class="details">Tax: <span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
-                <p class="details">Quantity: <span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
-                <p class="details">Total: <span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
-                <p class="details">Code: <span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
-                <div class="row row-cols-auto">
-                <form class="col-2-md" id="voidItem" action="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <button class=" btn btn-primary" type="submit">Void Item</button>
+                <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
+                <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
+                <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
+                <p class="details"><span class="fw-bold">Quantity: </span><span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
+                <p class="details"><span class="fw-bold">Price: </span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
+                <p class="details"><span class="fw-bold">Tax: </span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
+                <p class="details"><span class="fw-bold">Total: </span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                <div class="row flex-nowrap">
+                <form class="col-2-md col-3" id="voidItem" action="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <button class=" btn btn-primary itemButton" type="submit">Void Item</button>
                 </form>
-                <form class="col-2-md" id="voidLine" action="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <button class=" btn btn-primary" type="submit">Void Line</button>
+                <form class="col-2-md col-3" id="voidLine" action="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <button class=" btn btn-primary itemButton" type="submit">Void Line</button>
                 </form>
-                <form class="row row-cols-auto" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <div class="input-group">
-                    <input class="form-control" required name="price" type="number" step="0.01" min="0" max="9999.99" placeholder="0.00">
-                    <button class="btn btn-primary" type="submit">Price Override</button>
+                <form class="col-6" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                    <div class="input-group flex-nowrap unpadSides">
+                    <input class="form-control" id="overridePrice" required name="price" type="number" step="0.01" min="0" max="9999.99" placeholder="0.00">
+                    <button class="btn btn-primary overrideButton" type="submit">Price Override</button>
                     </div>
                 </form>
                 </div>
@@ -99,25 +102,25 @@
         </div>
 
 
-<div class="card">
-<div class="card-body">
+<div class="card removeBorder">
+<div class="card-body unpadSides">
 <form action="/pos/addItemToOrder/<%= order._id %>?_method=PUT" method="POST">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
-    <div class="input-group">
+    <div class="input-group flex-nowrap">
           <div id="autocomplete"></div>
-          <input type="text" id="searchInput" name="searchInput" class="form-control" autocomplete="off">
-          <div class="form-floating">
-            <select name="searchCategory" class="form-select">
+          <input type="hidden" id="searchInput" name="searchInput">
+          <div class="form-floating flex-grow-1">
+            <select name="searchCategory" class="form-select square">
               <option value="code">Item Code</option>
               <option value="name">Item Name</option>
             </select>
             <label for="searchCategory" class="form-label">Search by:</label>
           </div>
-    <div class="form-floating">
-    <input type="number" name="formQuantity" value="1" min="1" max="99" class="form-control">
+    <div class="form-floating flex-grow-1">
+    <input type="number" id="formQuantity" name="formQuantity" value="1" min="1" max="99" class="form-control square flex-grow-1">
     <label for="formQuantity" class="form-label">Qty:</label>
     </div>
-    <button type="submit" class="btn btn-primary">Add to Order</button>
+    <button type="submit" class="btn btn-primary searchButton flex-grow-1">Add Item</button>
     </div>
 </form>
 
@@ -126,10 +129,10 @@
 
 
 
-<div class="card item-footer">
-    <div class="card-body">
+<div class="card removeBorder">
+    <div class="card-body unpadSides unpadAll">
         <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
-            <button type="submit" class="btn btn-success">Complete Order</button>
+            <button type="submit" class="btn btn-lg btn-success completeButton">Complete Order</button>
         </form>
     </div>
 </div>

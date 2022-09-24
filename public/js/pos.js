@@ -104,3 +104,36 @@ templates: {
     }]
   },
 });
+
+// Payment option handling
+
+// Cash
+const cashButton = document.querySelector("#cashButton")
+const cashReceived = document.querySelector("#cashReceived")
+const cashTotal = document.querySelector("#grandTotal")
+const changeDue = document.querySelector("#change")
+const orderTotal = document.querySelector("#orderTotal")
+
+cashButton.addEventListener('click', getCashOrderTotal)
+
+function getCashOrderTotal() {
+    cashTotal.innerText = orderTotal.innerText
+}
+
+cashReceived.addEventListener('input', calculateChange)
+
+function calculateChange() {
+    let totalVal = Number(cashTotal.innerText.split('.').join(''))
+    let cashVal = Number(String(cashReceived.value).split('.').join(''))
+    console.log(cashReceived.value)
+    
+    if (totalVal < cashVal) {
+        console.log(cashVal, totalVal)
+        let changeVal = (cashVal - totalVal).toString()
+
+        changeDue.innerText = changeVal.slice(0,-2) + '.' + changeVal.slice(-2)
+
+    } else if (totalVal >= cashVal) {
+       changeDue.innerText = '0.00' 
+    }
+}

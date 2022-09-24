@@ -175,7 +175,7 @@ module.exports = {
      }
 
   },
-  completeOrder: async(req,res) => {
+  payment: async(req,res) => {
     try {
       
       const order = await Order.findOne({ _id: req.params.orderId })
@@ -199,6 +199,18 @@ module.exports = {
 
       res.send(new QRcode(paymentLink.url).svg())
       
+    } catch (err) {
+        console.log(err);
+    }
+  },
+  completeOrder: async(req,res) => {
+    try {
+      const order = await Order.findOne({ _id: req.params.orderId })
+      
+      order.completed = true
+      order.save()
+
+      res.redirect('/pos')
     } catch (err) {
         console.log(err);
     }

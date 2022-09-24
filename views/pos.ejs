@@ -16,8 +16,16 @@
                         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas">
                     </div>
                     <div class="offcanvas-body">
-                        <div>Placeholder</div>
-                        <a href="/logout" class="btn btn-primary">Logout</a>
+                        <div>Current Order</div>
+                        <div><a href="#" class="btn btn-primary my-1">Suspend Order</a></div>
+                        <div><a href="#" class="btn btn-primary my-1">Void Order</a></div>
+                        <div>Order Lookup</div>
+                        <div><a href="#" class="btn btn-primary my-1">Suspended Orders</a></div>
+                        <div><a href="#" class="btn btn-primary my-1">Completed Orders</a></div>
+                        <div>Account</div>
+                        <div><a href="#" class="btn btn-primary my-1">Add/Remove Items</a></div>
+                        <div><a href="#" class="btn btn-primary my-1">Account Options</a></div>
+                        <div><a href="/logout" class="btn btn-primary my-1">Logout</a></div>
                     </div>
                 </div>
             </nav>
@@ -54,7 +62,7 @@
             <td class="tablefoot"><div class="fw-bold">Items:</div> <%= order.children.reduce((a,b) => a + b.quantity,0) %></td>
             <td class="tablefoot"><div class="fw-bold">Subtotal:</div> <%= order.subtotal %></td>
             <td class="tablefoot"><div class="fw-bold">Tax:</div> <%= order.tax %></td>
-            <td class="tablefoot"><div class="fw-bold">Balance:</div> <%= order.total %></td>
+            <td class="tablefoot"><div class="fw-bold">Balance:</div> <span id="orderTotal"><%= order.total %></span></td>
             </tr>
           </tfoot>
         </table>
@@ -131,13 +139,64 @@
 
 <div class="card removeBorder">
     <div class="card-body unpadSides unpadAll">
-        <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
-            <button type="submit" class="btn btn-lg btn-success completeButton">Complete Order</button>
-        </form>
+            <button type="button" class="btn btn-lg btn-success completeButton" data-bs-toggle="modal" data-bs-target="#paymentModal">Complete Order</button>
     </div>
 </div>
     </div>
 </div>
+
+
+
+
+
+
+
+<div id="paymentModal" class="modal fade" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Payment Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" aria-label="Close"></button>
+            </div>
+
+
+            <div class="modal-body">
+                <div class="collapse" id="cashCollapse" data-bs-parent=".modal-body">
+
+                <div class="my-1">
+                    <p><span class="fw-bold">Total due: </span><span id="grandTotal"></span></p>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Cash received:</span>
+                        <input id="cashReceived" type="number" class="form-control" step="0.01" min="0" max="9999.99" placeholder="0.00">
+                    </div>
+                    <p><span class="fw-bold">Change due: </span><span id="change">0.00</span></p>
+                </div>
+
+
+                <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
+                    <button type="submit" class="btn btn-success">Complete Order</button>
+                </form>
+                </div>
+                <div class="collapse" id="cardCollapse" data-bs-parent=".modal-body">
+                <p>Test</p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show">Back</button>
+                <button class="btn btn-primary" id="cashButton" data-bs-target="#cashCollapse" data-bs-toggle="collapse" data-bs-parent=".modal-body">Pay with Cash</button>
+                <button class="btn btn-success" id="cardButton" data-bs-target="#cardCollapse" data-bs-toggle="collapse">Pay with Card</button>
+            </div>
+
+        </div>
+
+</div>
+
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
 <script>

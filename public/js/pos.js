@@ -109,31 +109,40 @@ templates: {
 
 // Cash
 const cashButton = document.querySelector("#cashButton")
-const cashReceived = document.querySelector("#cashReceived")
-const cashTotal = document.querySelector("#grandTotal")
-const changeDue = document.querySelector("#change")
+
 const orderTotal = document.querySelector("#orderTotal")
+
+const grandTotal = document.querySelector("#grandTotal")
+const cashReceived = document.querySelector("#cashReceived")
+const changeDue = document.querySelector("#change")
 
 cashButton.addEventListener('click', getCashOrderTotal)
 
 function getCashOrderTotal() {
-    cashTotal.innerText = orderTotal.innerText
+    if (grandTotal.innerText == null) {
+        grandTotal.innerText = orderTotal.innerText
+    }
+    calculateChange()
 }
 
-cashReceived.addEventListener('input', calculateChange)
+cashReceived.addEventListener('change', calculateChange)
 
 function calculateChange() {
-    let totalVal = Number(cashTotal.innerText.split('.').join(''))
-    let cashVal = Number(String(cashReceived.value).split('.').join(''))
-    console.log(cashReceived.value)
-    
-    if (totalVal < cashVal) {
-        console.log(cashVal, totalVal)
-        let changeVal = (cashVal - totalVal).toString()
-
-        changeDue.innerText = changeVal.slice(0,-2) + '.' + changeVal.slice(-2)
-
-    } else if (totalVal >= cashVal) {
-       changeDue.innerText = '0.00' 
+    // Add handling for decimals over 2 places
+    if (cashReceived.value != null) {
     }
+
+    const orderTotalVal = Big(orderTotal.innerText)
+    const cashVal = Big(cashReceived.value.toString() || '0.00')
+
+
+    if (orderTotalVal < cashVal) {
+        grandTotal.innerText = orderTotalVal.toString() 
+        changeDue.innerText = cashVal.minus(orderTotalVal).toString()
+
+    } else if (orderTotalVal >= cashVal) {
+        changeDue.innerText = '0.00' 
+        grandTotal.innerText = orderTotalVal.minus(cashVal).toString() 
+    }
+
 }

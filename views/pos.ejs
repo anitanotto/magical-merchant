@@ -158,7 +158,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Payment Options</h5>
+                <h5 class="modal-title fw-bold" id="paymentModalLabel">Payment Options</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" aria-label="Close"></button>
             </div>
 
@@ -170,7 +170,7 @@
                     <p><span class="fw-bold">Total due: </span><span id="grandTotal"></span></p>
                     <div class="input-group mb-3">
                         <span class="input-group-text">Cash received:</span>
-                        <input id="cashReceived" type="number" class="form-control" step="0.01" min="0" max="9999.99" placeholder="0.00">
+                        <input id="cashReceived" type="number" class="form-control" step="0.01" min="0.00" max="9999.99" placeholder="0.00">
                     </div>
                     <p><span class="fw-bold">Change due: </span><span id="change">0.00</span></p>
                 </div>
@@ -197,7 +197,7 @@
 
 
 
-
+<script src='/js/big.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
 <script>
   const { autocomplete } = window['@algolia/autocomplete-js'];

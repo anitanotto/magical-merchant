@@ -1,4 +1,12 @@
 <%- include('partials/header') -%>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic"
+    />
+    <link rel="stylesheet" href="/css/pos.css" />
+</head>
+
+<body>
 
 <div class="container-fluid">
     <div class="header top-row row">
@@ -182,6 +190,14 @@
                 </div>
                 <div class="collapse" id="cardCollapse" data-bs-parent=".modal-body">
                 <p>Test</p>
+                
+
+                <form action="/pos/payment/<%= order._id %>?_method=PUT" method="POST">
+                    <button type="submit" class="btn btn-success">Complete Order</button>
+                </form>
+
+
+
                 </div>
             </div>
 

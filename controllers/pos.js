@@ -1,18 +1,19 @@
 const cloudinary = require("../middleware/cloudinary");
 const Order = require("../models/Order");
+const User = require("../models/User");
 const Item = require("../models/Item");
 const Big = require('big.js')
-const stripe = require('stripe')(process.env.STRIPE_KEY)
 const QRcode = require('qrcode-svg')
 
 module.exports = {
   getPos: async (req, res) => {
     try {
+      console.log('Key: ' + req.user.stripeKey)
       let order = await Order.findOne({ user: req.user._id, completed: false })
       if (order == null) {
           order = await Order.create({ user: req.user.id })
       }
-      res.render("pos.ejs", { order: order, user: req.user, Big: Big });
+      res.render("pos.ejs", { order: order, user: req.user, Big: Big, stripeKey: (req.user.stripeKey ? true : false) });
     } catch (err) {
       console.log(err);
     }
@@ -177,8 +178,13 @@ module.exports = {
   },
   payment: async(req,res) => {
     try {
-      
+      const user = await User.findOne({ _id: req.user.id }) 
       const order = await Order.findOne({ _id: req.params.orderId })
+      const total = order.total.toString() 
+      const stripe = require('stripe')(user.stripeKey)
+
+        console.log('total:' + total)
+      if (order.paymentQr === '' && total !== '0.00') {
       let priceId = null
      
       const product = await stripe.products.create({
@@ -197,11 +203,31 @@ module.exports = {
           line_items: [{price: price.id, quantity: 1}],
       })
 
-      res.send(new QRcode(paymentLink.url).svg())
+      const paymentCode = new QRcode(paymentLink.url).svg()
+      order.paymentUrl = paymentLink.url
+      order.paymentQr = paymentCode
+      
+      order.save()
+
+      res.send(paymentCode)
+      } else if (total === '0.00') {
+        res.send('Cannot generate payment code with no items in order.')
+      } else {
+          res.send(order.paymentQr)
+      }
       
     } catch (err) {
         console.log(err);
     }
+  },
+  setStripeSettings: async(req,res) => {
+      const user = await User.findOne({ _id: req.user.id })
+
+      user.stripeKey = req.body.stripePublicKey 
+      user.save()
+
+      res.redirect('/pos')
+
   },
   completeOrder: async(req,res) => {
     try {

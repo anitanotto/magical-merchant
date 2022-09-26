@@ -5,6 +5,14 @@ const UserSchema = new mongoose.Schema({
   userName: { type: String, unique: true },
   email: { type: String, unique: true },
   password: String,
+  stripeKey: {
+      type: String,
+      default: '',
+  },
+  stripeCurrency: {
+      type: String,
+      default: 'usd',
+  },
 });
 
 // Password hash middleware.

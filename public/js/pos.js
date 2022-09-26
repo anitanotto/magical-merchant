@@ -146,3 +146,34 @@ function calculateChange() {
     }
 
 }
+
+// Get QR Code
+
+document.querySelector('#getQrCode').addEventListener('click', getQrCode)
+
+async function getQrCode() {
+    const id = document.querySelector('h1').id
+    const display = document.querySelector('#qrDisplay')
+    const qrButton = document.querySelector('#getQrCode')
+    const completeButton = document.querySelector('#cardComplete')
+    const textDisplay = document.querySelector('#cardDisplay')
+    qrButton.classList.remove('d-block')
+    qrButton.classList.add('hidden')
+    display.classList.toggle('spinner-border')
+    display.classList.toggle('text-primary')
+
+    const qr = await fetch(`/pos/payment/${id}`, { method: 'PUT', })
+    const qrText = await qr.text()
+
+    display.classList.toggle('spinner-border')
+    display.classList.toggle('text-primary')
+    if (qrText === "Cannot generate payment code with no items in order.") {
+        display.style.textAlign = 'center'
+        display.innerText = qrText
+    } else {
+    cardDisplay.innerText = 'Please have customer scan QR code to complete payment.'
+    display.innerHTML = qrText
+    completeButton.classList.toggle('hidden')
+    completeButton.classList.add('d-block')
+    }
+}

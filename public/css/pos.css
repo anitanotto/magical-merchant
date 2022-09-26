@@ -198,3 +198,8 @@ table {
 .form-select {
     background-image: none;
 }
+
+svg {
+    display: block;
+    margin: 0 auto;
+}

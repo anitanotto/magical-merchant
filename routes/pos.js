@@ -15,6 +15,7 @@ router.put("/voidLine/:orderId/:itemId/", posController.voidLine);
 router.put("/priceOverride/:orderId/:itemId/", posController.priceOverride);
 router.put("/payment/:orderId", posController.payment);
 router.put("/completeOrder/:orderId", posController.completeOrder);
+router.put("/setStripeSettings", posController.setStripeSettings);
 
 router.delete("/deletePost/:id", posController.deletePost);
 

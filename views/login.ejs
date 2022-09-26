@@ -4,10 +4,26 @@
 
     <link href="/css/signin.css" rel="stylesheet">
 </head>
-<body class="text-center">
+<body>
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <span class="fs-4">Magical Merchant</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="/login" class="nav-link active">Login</a></li>
+        <li class="nav-item"><a href="/signup" class="nav-link">Sign-up</a></li>
+      </ul>
+    </header>
+
+    <main class="my-auto px-3 text-center signin-container">
 
 
-<main class="form-signin">
+<main class="form-signin text-center">
   <form action="/login" method="POST">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
@@ -23,9 +39,38 @@
     <div class="checkbox mb-3">
     </div>
     <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-    <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
   </form>
 </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="mt-auto row justify-content-around">
+    </footer>
+</div>
 
 
 <%- include('partials/footer') -%>

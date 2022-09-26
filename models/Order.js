@@ -54,6 +54,14 @@ const OrderSchema = new mongoose.Schema({
       default: false,
       required: true,
   },
+  paymentUrl: {
+      type: String,
+      default: '',
+  },
+  paymentQr: {
+      type: String,
+      default: '',
+  },
 });
 
 module.exports = mongoose.model("Order", OrderSchema);

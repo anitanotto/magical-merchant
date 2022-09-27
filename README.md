@@ -1,28 +1,34 @@
 # Magical Merchant
-A web-based retail point of sale system for local game stores and other small businesses, designed with mobile in mind so you can use the same POS in-store and at tournaments, conventions, and other events.
+A web-based retain point of sale app that allows small businesses to operate a cash register anywhere without any extra hardware - only requires a phone and a Stripe account if you want to take payments by card, Apple pay, etc.
 
-**Link to project:** https://anitanotto.github.io/magical-merchant/
+I got the idea to build it from seeing vendors having either limited POS options or having to go out of the way to bring equipment from their store when selling at game tournaments, anime conventions, and other events. But, you could use this app at farmers markets, food trucks, in a store, or anywhere!
+
+**Link to project:** Waiting to find a suitable hosting platform.
 
 ![alt tag](magicalmerchant.png)
 
 ## How It's Made:
 
-**Tech used:** HTML, CSS, JavaScript, Node.js, MongoDB
+**Tech used:** HTML, EJS, CSS, Bootstrap, JavaScript, Node.js, Express, MongoDB, Mongoose
 
-After years of working in retail, I want to build a POS that is easy to use but still has all the essentials, plus more powerful features for those who want to use them. 
+Using the Stripe API for card payments, Algolia Autocomplete for database searching and autocomplete on the front end, Big.js to handle floating point math and QRcode-svg to convert Stripe Payment Links to SVG.
 
 ## Optimizations
-Ideal features to add in the future :
-* Search, add, and edit items in the product database right from the POS, even during a transaction if necessary.
-* Ability to interface with mobile phone cameras for UPC scanning and payment peripherals for the ability to run POS 100% off of mobile devices.
-  * Use of Azure Cognitive Services API for single card and/or product recognition.
+Features I want to add in the future:
+* Edit/Delete products from the items database directly in the POS.
+* Order history and suspend transaction functionality & pages using the current POS page.
+* Ability to upload bulk data to the items database. 
+* Interfacing with mobile phone's camera to provide UPC/other code scanning functionality and/or using an API for product recognition.
    * Additional setting to ignore certain kinds of codes when scanning (ex. only scan UPCs and ignore stray QR codes on the product when ringing a transaction)
-* QR code-based system for customer receipts and/or store loyalty program to help your business go paperless.
-* Integration with TCGplayer API for pricing & inventory.
+* Further integration with Stripe API to allow for refunds and more details included in the generated products/prices.
+* Convert Frontend to a framework like React and reduce instances where the page is refreshing.
 
 ## Lessons Learned:
+How to integrate multiple remote APIs with my own to provide necessary functionality without having to code everything myself.
+
+How to budget time between multiple projects to hit all necessary deadlines between them.
 
 My previous work experience can be used as a knowledge base to build a better product.
 
 ## Example:
-**Current Wireframe:** https://anitanotto.github.io/magical-merchant/
+Currently waiting to find a suitable hosting platform to deploy on.

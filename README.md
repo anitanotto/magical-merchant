@@ -3,7 +3,10 @@ A web-based retain point of sale app that allows small businesses to operate a c
 
 I got the idea to build it from seeing vendors having either limited POS options or having to go out of the way to bring equipment from their store when selling at game tournaments, anime conventions, and other events. But, you could use this app at farmers markets, food trucks, in a store, or anywhere!
 
-**Link to project:** Waiting to find a suitable hosting platform.
+**Link to project:** https://magical-merchant.herokuapp.com/
+Live version with demo account available on Heroku until 11/28/22
+Demo Account: demo@demo.demo 
+Demo Password: magical-merchant-demo
 
 ![alt tag](magicalmerchant.png)
 
@@ -31,4 +34,7 @@ How to budget time between multiple projects to hit all necessary deadlines betw
 My previous work experience can be used as a knowledge base to build a better product.
 
 ## Example:
-Currently waiting to find a suitable hosting platform to deploy on.
+Live version with demo account available on Heroku until 11/28/22
+https://magical-merchant.herokuapp.com/
+Demo Account: demo@demo.demo 
+Demo Password: magical-merchant-demo

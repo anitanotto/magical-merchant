@@ -87,18 +87,35 @@ autocomplete({
         sourceId: 'items',
         async getItems({ query }) {
             let items = await fetch('/items') 
+            const category = document.querySelector('#searchCategory').value
             items = await items.json()
             
+            if (category === 'name') {
             return items.filter(({ name }) => 
                 name.toLowerCase().includes(query.toLowerCase())
                     );
+            } else if (category === 'code') {
+            return items.filter(({ code }) => 
+                code.toLowerCase().includes(query.toLowerCase())
+                    );
+            }
         },
         getItemInputValue({ item }) {
+            const category = document.querySelector('#searchCategory').value
+            if (category === 'name') {
             return item.name
+            } else if (category === 'code') {
+            return item.code
+            }
         },
 templates: {
           item({ item }) {
-            return item.name;
+            const category = document.querySelector('#searchCategory').value
+            if (category === 'name') {
+            return `Name: ${item.name} - Code: ${item.code}`;
+            } else if (category === 'code') {
+            return `Code: ${item.code} - Name: ${item.name}`;
+            }
           },
 },
     }]

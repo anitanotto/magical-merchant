@@ -152,12 +152,14 @@ function calculateChange() {
     const orderTotalVal = Big(orderTotal.innerText)
     const cashVal = Big(cashReceived.value.toString() || '0.00')
 
+    console.log(orderTotalVal.toString(),cashVal.toString())
+    console.log(cashVal.minus(orderTotalVal).toString())
 
-    if (orderTotalVal < cashVal) {
-        grandTotal.innerText = orderTotalVal.toString() 
+    if (Number(orderTotalVal) <= Number(cashVal)) {
+        grandTotal.innerText = '0.00'
         changeDue.innerText = cashVal.minus(orderTotalVal).toString()
 
-    } else if (orderTotalVal >= cashVal) {
+    } else if (Number(orderTotalVal) > Number(cashVal)) {
         changeDue.innerText = '0.00' 
         grandTotal.innerText = orderTotalVal.minus(cashVal).toString() 
     }

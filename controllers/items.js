@@ -4,7 +4,7 @@ const Big = require('big.js')
 module.exports = {
   getItems: async (req, res) => {
     try {
-      const items = await Item.find()
+      const items = await Item.find({ user: req.user._id})
 
       res.send(items)
 

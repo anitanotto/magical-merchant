@@ -42,11 +42,11 @@ orderDetails.addEventListener("click", markActiveRow)
 
 // Function to update item details when a new active row is selected on the order details table or when a new item is added to the current order from the database.
 
-function updateItemDetails(name = '', price = '', tax = '', quantity = '', total = '', code = '', id = '') {
+function updateItemDetails(name = '', price = '', tax = '', total = '', code = '', id = '') {
+    console.log(name, price, tax, total, code, id)
     document.querySelector('#itemName').innerText = name
     document.querySelector('#itemTax').innerText = tax
     document.querySelector('#itemPrice').innerText = price
-    document.querySelector('#itemQuantity').innerText = quantity
     document.querySelector('#itemTotal').innerText = total
     document.querySelector('#itemCode').innerText = code
     document.querySelector('h2').id = id
@@ -79,6 +79,7 @@ autocomplete({
       detachedSearchButtonPlaceholder: 'fixedWidth squareRight',
   },
   onStateChange({ state }) {
+      /*
     if (state.query !== '') {
       document.querySelector('#searchInput').value = state.query
       const mobileText = document.querySelector('.aa-DetachedSearchButtonPlaceholder')
@@ -87,9 +88,10 @@ autocomplete({
           mobileText.style.color = 'black'
       }
     }
+    */
   },
   getSources() {
-    return [{
+    return [/*{
         sourceId: 'items',
         async getItems({ query }) {
             let items = await fetch('/items/getItems') 
@@ -124,81 +126,6 @@ templates: {
             }
           },
 },
-    }]
+    }*/]
   },
 });
-
-// Payment option handling
-
-// Cash
-const cashButton = document.querySelector("#cashButton")
-
-const orderTotal = document.querySelector("#orderTotal")
-
-const grandTotal = document.querySelector("#grandTotal")
-const cashReceived = document.querySelector("#cashReceived")
-const changeDue = document.querySelector("#change")
-
-cashButton.addEventListener('click', getCashOrderTotal)
-
-function getCashOrderTotal() {
-    if (grandTotal.innerText == null) {
-        grandTotal.innerText = orderTotal.innerText
-    }
-    calculateChange()
-}
-
-cashReceived.addEventListener('change', calculateChange)
-
-function calculateChange() {
-    // Add handling for decimals over 2 places
-    if (cashReceived.value != null) {
-    }
-
-    const orderTotalVal = Big(orderTotal.innerText)
-    const cashVal = Big(cashReceived.value.toString() || '0.00')
-
-    console.log(orderTotalVal.toString(),cashVal.toString())
-    console.log(cashVal.minus(orderTotalVal).toString())
-
-    if (Number(orderTotalVal) <= Number(cashVal)) {
-        grandTotal.innerText = '0.00'
-        changeDue.innerText = cashVal.minus(orderTotalVal).toString()
-
-    } else if (Number(orderTotalVal) > Number(cashVal)) {
-        changeDue.innerText = '0.00' 
-        grandTotal.innerText = orderTotalVal.minus(cashVal).toString() 
-    }
-
-}
-
-// Get QR Code
-
-document.querySelector('#getQrCode').addEventListener('click', getQrCode)
-
-async function getQrCode() {
-    const id = document.querySelector('h1').id
-    const display = document.querySelector('#qrDisplay')
-    const qrButton = document.querySelector('#getQrCode')
-    const completeButton = document.querySelector('#cardComplete')
-    const textDisplay = document.querySelector('#cardDisplay')
-    qrButton.classList.remove('d-block')
-    qrButton.classList.add('hidden')
-    display.classList.toggle('spinner-border')
-    display.classList.toggle('text-primary')
-
-    const qr = await fetch(`/pos/payment/${id}`, { method: 'PUT', })
-    const qrText = await qr.text()
-
-    display.classList.toggle('spinner-border')
-    display.classList.toggle('text-primary')
-    if (qrText === "Cannot generate payment code with no items in order.") {
-        display.style.textAlign = 'center'
-        display.innerText = qrText
-    } else {
-    cardDisplay.innerText = 'Please have customer scan QR code to complete payment.'
-    display.innerHTML = qrText
-    completeButton.classList.toggle('hidden')
-    completeButton.classList.add('d-block')
-    }
-}

@@ -42,11 +42,11 @@ orderDetails.addEventListener("click", markActiveRow)
 
 // Function to update item details when a new active row is selected on the order details table or when a new item is added to the current order from the database.
 
-function updateItemDetails(name = '', price = '', tax = '', quantity = '', total = '', code = '', id = '') {
+function updateItemDetails(name = '', price = '', tax = '', total = '', code = '', id = '') {
+    console.log(name, price, tax, total, code, id)
     document.querySelector('#itemName').innerText = name
     document.querySelector('#itemTax').innerText = tax
     document.querySelector('#itemPrice').innerText = price
-    document.querySelector('#itemQuantity').innerText = quantity
     document.querySelector('#itemTotal').innerText = total
     document.querySelector('#itemCode').innerText = code
     document.querySelector('h2').id = id
@@ -128,6 +128,7 @@ templates: {
   },
 });
 
+/*
 // Payment option handling
 
 // Cash
@@ -202,3 +203,4 @@ async function getQrCode() {
     completeButton.classList.add('d-block')
     }
 }
+*/

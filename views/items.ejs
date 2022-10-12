@@ -3,7 +3,7 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic"
     />
-    <link rel="stylesheet" href="/css/pos.css" />
+    <link rel="stylesheet" href="/css/items.css" />
 </head>
 
 <body>
@@ -12,7 +12,7 @@
     <div class="header top-row row">
         <div class="col-6 g=0">
             <nav>
-                <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
+                <h1><div class="fw-bold">Item Database</div></h1>
             </nav>
         </div>
         <div class="col-6">
@@ -134,28 +134,21 @@
         <table id="orderDetails" class="table table-fixed table-hover">
           <thead>
             <tr>
-<th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
+<th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-4">Tax</th><th class="mobile-col col-sm-2">Total</th>
             </tr>
           </thead>
           <tbody>
-            <% for (let i = 0; i < order.children.length; i++) { %>
-            <% let item = order.children[i] %>
-            <tr id="<%= item._id %>" class="<%=item.code%> <%= i === order.children.length -1 ? 'table-active' : ''%>">
+            <% for (let i = 0; i < items.length; i++) { %>
+            <% let item = items[i] %>
+            <tr id="<%= item._id %>" class="<%=item.code%> <%= i === items.length -1 ? 'table-active' : ''%>">
             <td class="col-sm-4"><%= item.name %></td>
             <td class="col-sm-2"><%= currency %><%= item.price %></td>
-            <td class="col-sm-2"><%= currency %><%= item.tax %></td>
-            <td class="col-sm-2"><%= item.quantity %></td>
+            <td class="col-sm-4"><%= currency %><%= item.tax %></td>
             <td class="col-sm-2"><%= currency %><%= Big(item.price).add(Big(item.tax)).times(item.quantity).toFixed(2) %></td>
             </tr>
             <% } %>
           </tbody>
           <tfoot>
-            <tr class="d-flex justify-content-between">
-            <td class="tablefoot"><div class="fw-bold">Items:</div> <%= order.children.reduce((a,b) => a + b.quantity,0) %></td>
-            <td class="tablefoot"><div class="fw-bold">Subtotal:</div><%= currency %><%= order.subtotal %></td>
-            <td class="tablefoot"><div class="fw-bold">Tax:</div><%= currency %><%= order.tax %></td>
-            <td class="tablefoot"><div class="fw-bold">Balance:</div><%= currency %><span id="orderTotal"><%= order.total %></span></td>
-            </tr>
           </tfoot>
         </table>
       </div>
@@ -169,42 +162,116 @@
 
         <div class="item-info col-6 d-flex flex-column justify-content-between">
 
-            <div class="card">
-                <% itemDetails = order.children[(order.children.length-1)] %>
-                <div class="card-body">
-                <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
-                <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
-                <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
-                <p class="details"><span class="fw-bold">Quantity: </span><span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
-                <p class="details"><span class="fw-bold">Price:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
-                <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
-                <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
-                <div class="row flex-nowrap">
-                <form class="col-2-md col-3" id="voidItem" action="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <button class=" btn btn-primary itemButton" type="submit">Void Item</button>
-                </form>
-                <form class="col-2-md col-3" id="voidLine" action="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <button class=" btn btn-primary itemButton" type="submit">Void Line</button>
-                </form>
-                <form class="col-6" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
-                    <div class="input-group flex-nowrap unpadSides">
-                    <input class="form-control" id="overridePrice" required name="price" type="number" step="0.01" min="0" max="9999.99" placeholder="0.00">
-                    <button class="btn btn-primary overrideButton" type="submit">Price Override</button>
+                <div class="card">
+                    <% itemDetails = items[(items.length-1)] %>
+                    <div class="card-body">
+            <div class="collapse show detailCollapseSet" id="detailsCollapse" data-bs-parent=".card-body" >
+                        <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
+                        <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
+                        <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
+                        <div>
+                            <p class="details"><span class="fw-bold">Price:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
+                            <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
+                            <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                        </div>
+
+                        <div class="row flex-nowrap">
+                            <form class="col-2-md col-5 pr-0" id="voidItem" action="/pos/voidItem/<%=  %>/<%= items.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                                <button class=" btn btn-primary itemButton" type="submit">Delete Item</button>
+                            </form>
+                            <form class="col-2-md col-4 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#editCollapse" data-bs-parent=".card-body" type="button">Edit Item</button>
+                            </form>
+
+                            <form class="col-2-md col-3 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addCollapse" data-bs-parent=".card-body" type="button">Add Item</button>
+                            </form>
+
+
+                        </div>
                     </div>
-                </form>
-                </div>
+                    
+            <div class="collapse" id="editCollapse" class="detailCollapseSet" data-bs-parent=".card-body">
+                        <h2><div class="fw-bold">Edit Item</div></h2>
+
+                        <div class="input-group mb-3">
+                                <label class="input-group-text" for="editName">Name</label>
+                                <input type="text" class="form-control" id="editName" placeholder="Item Name">
+                                <label class="input-group-text" for="editCode">Code</label>
+                                <input type="text" class="form-control" id="editCode" placeholder="Item Code">
+                        </div>
+
+                        <div class="input-group mb-3">
+                                <label class="input-group-text" for="editPrice">Price</label>
+                                <input type="text" class="form-control" id="editPrice" placeholder="Item Price">
+                                <label class="input-group-text" for="editTax">Tax</label>
+                                <input type="text" class="form-control" id="editTax" placeholder="Item Tax">
+                        </div>
+
+                        <div class="row flex-nowrap">
+                            <form class="col-2-md col-5 pr-0" id="editItem" action="/pos/voidItem/<%=  %>/<%= items.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                                <button class=" btn btn-primary itemButton" type="submit">Submit Changes</button>
+                            </form>
+                            <form class="col-2-md col-4 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" data-bs-parent=".card-body" type="button">Item Details</button>
+                            </form>
+
+                            <form class="col-2-md col-3 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addCollapse" data-bs-parent=".card-body" type="button">Add Item</button>
+                            </form>
+                        </div>
+
+
+            </div>
+            
+
+
+            <div class="collapse" id="addCollapse" class="detailCollapseSet" data-bs-parent=".card-body">
+                        <h2><div class="fw-bold">Add Item</div></h2>
+
+                        <div class="input-group mb-3">
+                                <label class="input-group-text" for="addName">Name</label>
+                                <input type="text" class="form-control" id="addName" placeholder="Item Name">
+                                <label class="input-group-text" for="addCode">Code</label>
+                                <input type="text" class="form-control" id="addCode" placeholder="Item Code">
+                        </div>
+
+                        <div class="input-group mb-3">
+                                <label class="input-group-text" for="addPrice">Price</label>
+                                <input type="text" class="form-control" id="addPrice" placeholder="Item Price">
+                                <label class="input-group-text" for="addTax">Tax</label>
+                                <input type="text" class="form-control" id="addTax" placeholder="Item Tax">
+                        </div>
+
+                        <div class="row flex-nowrap">
+                            <form class="col-2-md col-5 pr-0">
+                                <button class=" btn btn-primary itemButton" id="addSubmit">Submit Changes</button>
+                            </form>
+                            <form class="col-2-md col-4 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" data-bs-parent=".card-body" type="button">Item Details</button>
+                            </form>
+
+                            <form class="col-2-md col-3 p-0">
+                                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#editCollapse" data-bs-parent=".card-body" type="button">Edit Item</button>
+                            </form>
+                        </div>
+
+
             </div>
 
 
 
 
 
+
+
+                </div>
         </div>
 
 
 <div class="card removeBorder">
 <div class="card-body unpadSides">
-<form action="/pos/addItemToOrder/<%= order._id %>?_method=PUT" method="POST">
+<form action="/pos/addItemToOrder/<%= %>?_method=PUT" method="POST">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
     <div class="input-group flex-nowrap">
           <div id="autocomplete"></div>
@@ -216,11 +283,7 @@
             </select>
             <label for="searchCategory" class="form-label">Search by:</label>
           </div>
-    <div class="form-floating flex-grow-1">
-    <input type="number" id="formQuantity" name="formQuantity" value="1" min="1" max="99" class="form-control square flex-grow-1">
-    <label for="formQuantity" class="form-label">Qty:</label>
-    </div>
-    <button type="submit" class="btn btn-primary searchButton flex-grow-1">Add Item</button>
+    <button type="submit" class="btn btn-primary searchButton flex-grow-1">Select Item</button>
     </div>
 </form>
 
@@ -231,7 +294,7 @@
 
 <div class="card removeBorder">
     <div class="card-body unpadSides unpadAll">
-            <button type="button" class="btn btn-lg btn-success completeButton" data-bs-toggle="modal" data-bs-target="#paymentModal">Complete Order</button>
+            <button type="button" class="btn btn-lg btn-success completeButton" data-bs-toggle="modal" data-bs-target="#paymentModal">Back to Order</button>
     </div>
 </div>
     </div>
@@ -268,19 +331,19 @@
                 </div>
 
 
-                <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
+                <form action="/pos/completeOrder/<%=  %>?_method=PUT" method="POST">
                     <button type="submit" class="btn btn-success">Complete Order</button>
                 </form>
                 </div>
                 <div class="collapse" id="cardCollapse" data-bs-parent=".modal-body">
-                <% if (stripeKey === true) { %>
+                <% if (true) { %>
                 <div class="row justify-content-center">
                 <p id="cardDisplay" class="text-center"></p>
                 <div id="qrDisplay"></div>
                 </div>
                 <button type="button" class="btn btn-secondary mx-auto d-block" id="getQrCode">Generate Payment Code</button>
 
-                <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
+                <form action="/pos/completeOrder/<%=  %>?_method=PUT" method="POST">
                     <button type="submit" id="cardComplete" class="hidden mx-auto btn btn-success">Complete Order</button>
                 </form>
                 <% } else { %>
@@ -320,6 +383,6 @@
   const { autocomplete } = window['@algolia/autocomplete-js'];
 </script>
 
-<script src="/js/pos.js"></script>
+<script src="/js/items.js"></script>
 
 <%- include('partials/footer') -%>

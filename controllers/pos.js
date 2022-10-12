@@ -8,12 +8,17 @@ const QRcode = require('qrcode-svg')
 module.exports = {
   getPos: async (req, res) => {
     try {
-      console.log('Key: ' + req.user.stripeKey)
+      const user = await User.findOne({ _id: req.user.id })
+      const currencyTable = {
+            'usd' : '$'
+      }
+      const currency = currencyTable[user.stripeCurrency]
+        console.log(currency)
       let order = await Order.findOne({ user: req.user._id, completed: false })
       if (order == null) {
           order = await Order.create({ user: req.user.id })
       }
-      res.render("pos.ejs", { order: order, user: req.user, Big: Big, stripeKey: (req.user.stripeKey ? true : false) });
+      res.render("pos.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
     } catch (err) {
       console.log(err);
     }
@@ -245,14 +250,6 @@ module.exports = {
     try {
       const posts = await Pos.find().sort({ createdAt: "desc" }).lean();
       res.render("feed.ejs", { posts: posts });
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  getPost: async (req, res) => {
-    try {
-      const post = await Pos.findById(req.params.id);
-      res.render("post.ejs", { post: post, user: req.user });
     } catch (err) {
       console.log(err);
     }

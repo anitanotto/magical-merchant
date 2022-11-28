@@ -13,7 +13,7 @@ const posRoutes = require("./routes/pos");
 const itemsRoutes = require("./routes/items");
 
 //Use .env file in config folder
-require("dotenv").config({ path: "./config/.env" });
+require("dotenv").config({ path: "/etc/secrets/.env" });
 
 // Passport config
 require("./config/passport")(passport);

@@ -1,0 +1,45 @@
+
+<nav hx-swap-oob="outerHTML:#order-id" id="order-id" hx-swap="none">
+    <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
+</nav>
+
+
+<div hx-swap-oob="outerHTML:#order-info" id="order-info" class="order-info col-6 g-0-md">
+
+<div class="container unpadSides">
+  <div class="row-md">
+      <div class="panel panel-default">
+        <table id="orderDetails" class="table table-fixed table-hover">
+          <thead>
+            <tr>
+<th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < order.children.length; i++) { %>
+            <% let item = order.children[i] %>
+            <tr id="<%= item._id %>" class="<%=item.code%> <%= i === order.children.length -1 ? 'table-active' : ''%>">
+            <td class="col-sm-4"><%= item.name %></td>
+            <td class="col-sm-2"><%= currency %><%= item.price %></td>
+            <td class="col-sm-2"><%= currency %><%= item.tax %></td>
+            <td class="col-sm-2"><%= item.quantity %></td>
+            <td class="col-sm-2"><%= currency %><%= Big(item.price).add(Big(item.tax)).times(item.quantity).toFixed(2) %></td>
+            </tr>
+            <% } %>
+          </tbody>
+          <tfoot>
+            <tr class="d-flex justify-content-between">
+            <td class="tablefoot"><div class="fw-bold">Items:</div> <%= order.children.reduce((a,b) => a + b.quantity,0) %></td>
+            <td class="tablefoot"><div class="fw-bold">Subtotal:</div><%= currency %><%= order.subtotal %></td>
+            <td class="tablefoot"><div class="fw-bold">Tax:</div><%= currency %><%= order.tax %></td>
+            <td class="tablefoot"><div class="fw-bold">Balance:</div><%= currency %><span id="orderTotal"><%= order.total %></span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+  </div>
+</div>
+
+
+
+        </div>

@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Item = require("../models/Item");
 const Big = require('big.js')
 const QRcode = require('qrcode-svg')
+const ejs = require('ejs')
 
 module.exports = {
   getPos: async (req, res) => {
@@ -73,7 +74,13 @@ module.exports = {
           console.log('Failed to add item to order');
         }
 
-      res.redirect('/pos');
+      const user = await User.findOne({ _id: req.user.id })
+      const currencyTable = {
+            'usd' : '$'
+      }
+      const currency = currencyTable[user.stripeCurrency]
+        console.log(currency)
+      res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
                 
 
     } catch (err) {
@@ -111,7 +118,14 @@ module.exports = {
             console.log('No item to void')
          }
 
-         res.redirect('/pos');
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
+                
      } catch(err) {
          console.log(err);
      }
@@ -139,9 +153,15 @@ module.exports = {
             console.log('No items to void')
          }
 
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
 
 
-         res.redirect('/pos');
      } catch(err) {
          console.log(err);
      }

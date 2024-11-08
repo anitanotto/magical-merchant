@@ -4,6 +4,7 @@
         href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic"
     />
     <link rel="stylesheet" href="/css/pos.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
 </head>
 
 <body>
@@ -11,7 +12,7 @@
 <div class="container-fluid">
     <div class="header top-row row">
         <div class="col-6 g=0">
-            <nav>
+            <nav id="order-id">
                 <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
             </nav>
         </div>
@@ -126,7 +127,7 @@
 
 
     <div class="row mobile-column">
-        <div class="order-info col-6 g-0-md">
+        <div hx-swap-oob="outerHTML:#order-info" id="order-info" class="order-info col-6 g-0-md">
 
 <div class="container unpadSides">
   <div class="row-md">
@@ -180,10 +181,10 @@
                 <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
                 <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
                 <div class="row flex-nowrap">
-                <form class="col-2-md col-3" id="voidItem" action="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                <form class="col-2-md col-3" id="voidItem" hx-put="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>" hx-swap="none">
                     <button class=" btn btn-primary itemButton" type="submit">Void Item</button>
                 </form>
-                <form class="col-2-md col-3" id="voidLine" action="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                <form class="col-2-md col-3" id="voidLine" hx-put="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>" hx-swap="none">
                     <button class=" btn btn-primary itemButton" type="submit">Void Line</button>
                 </form>
                 <form class="col-6" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
@@ -204,7 +205,7 @@
 
 <div class="card removeBorder">
 <div class="card-body unpadSides">
-<form action="/pos/addItemToOrder/<%= order._id %>?_method=PUT" method="POST">
+<form hx-put="/pos/addItemToOrder/<%= order._id %>" hx-swap="none">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
     <div class="input-group flex-nowrap">
           <div id="autocomplete"></div>

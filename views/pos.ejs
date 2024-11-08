@@ -128,7 +128,7 @@
 
     <div class="row mobile-column">
         <div hx-swap-oob="outerHTML:#order-info" id="order-info" class="order-info col-6 g-0-md">
-
+<div id="order-inner">
 <div class="container unpadSides">
   <div class="row-md">
       <div class="panel panel-default">
@@ -164,7 +164,7 @@
 </div>
 
 
-
+</div>
         </div>
 
 
@@ -173,6 +173,7 @@
             <div class="card">
                 <% itemDetails = order.children[(order.children.length-1)] %>
                 <div class="card-body">
+                <div id = "details">
                 <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
                 <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
                 <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
@@ -180,6 +181,8 @@
                 <p class="details"><span class="fw-bold">Price:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
                 <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
                 <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                </div>
+
                 <div class="row flex-nowrap">
                 <form class="col-2-md col-3" id="voidItem" hx-put="/pos/voidItem/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>" hx-swap="none">
                     <button class=" btn btn-primary itemButton" type="submit">Void Item</button>
@@ -187,7 +190,7 @@
                 <form class="col-2-md col-3" id="voidLine" hx-put="/pos/voidLine/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>" hx-swap="none">
                     <button class=" btn btn-primary itemButton" type="submit">Void Line</button>
                 </form>
-                <form class="col-6" id="priceOverride" action="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/?_method=PUT" method="POST">
+                <form class="col-6" id="priceOverride" hx-put="/pos/priceOverride/<%= order._id %>/<%= order.children.length ? itemDetails._id : 'x' %>/" hx-swap="none">
                     <div class="input-group flex-nowrap unpadSides">
                     <input class="form-control" id="overridePrice" required name="price" type="number" step="0.01" min="0" max="9999.99" placeholder="0.00">
                     <button class="btn btn-primary overrideButton" type="submit">Price Override</button>

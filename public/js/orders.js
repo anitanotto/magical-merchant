@@ -1,6 +1,6 @@
 
 // Highlights active row in the order details table and updates the item details with data from the new active row.
-const orderDetails = document.querySelector('#orderDetails')
+const orderDetails = document.querySelector('#order-container')
 
 const markActiveRow = (function () {
     let lastActive = null
@@ -56,10 +56,19 @@ function updateItemDetails(name = '', price = '', tax = '', total = '', code = '
 function updateItemActions() {
     const orderId = document.querySelector('h1').id || 'x'
     const itemId = document.querySelector('h2').id || 'x'
-    document.querySelector('#voidItem').action = 
-`/pos/voidItem/${orderId}/${itemId}/?_method=PUT`
-    document.querySelector('#voidLine').action = `/pos/voidLine/${orderId}/${itemId}/?_method=PUT`
-    document.querySelector('#priceOverride').action = `/pos/priceOverride/${orderId}/${itemId}/?_method=PUT`
+    //document.querySelector('#voidItem').action = `/pos/voidItem/${orderId}/${itemId}/?_method=PUT`
+    const void = document.querySelector('#voidItem')
+    void.setAttribute('hx-put', `/pos/voidItem/${orderId}/${itemId}/`)
+    console.log(void.attributes)
+    htmx.process(document.body)
+
+    //document.querySelector('#voidLine').action = `/pos/voidLine/${orderId}/${itemId}/?_method=PUT`
+    document.querySelector('#voidLine').hx-put = `/pos/voidLine/${orderId}/${itemId}/`
+    
+    //document.querySelector('#priceOverride').action = `/pos/priceOverride/${orderId}/${itemId}/?_method=PUT`
+    document.querySelector('#priceOverride').hx-put = `/pos/priceOverride/${orderId}/${itemId}/`
+
+    htmx.process(document.body)
 }
 
 

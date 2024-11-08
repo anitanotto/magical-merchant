@@ -80,7 +80,9 @@ module.exports = {
       }
       const currency = currencyTable[user.stripeCurrency]
         console.log(currency)
-      res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
+        console.log(item._id)
+        console.log(typeof item._id)
+      res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: String(item._id) });
                 
 
     } catch (err) {
@@ -124,7 +126,11 @@ module.exports = {
          }
          const currency = currencyTable[user.stripeCurrency]
          console.log(currency)
-         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
+         const targetItem = req.params.itemId
+         console.log(order.children)
+         console.log('target item: ' + targetItem)
+         console.log(typeof targetItem)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: targetItem });
                 
      } catch(err) {
          console.log(err);
@@ -159,7 +165,7 @@ module.exports = {
          }
          const currency = currencyTable[user.stripeCurrency]
          console.log(currency)
-         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false) });
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: String(order.children.at(-1)._id) });
 
 
      } catch(err) {
@@ -195,7 +201,18 @@ module.exports = {
             console.log('No items to override')
          }
 
-         res.redirect('/pos');
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         const targetItem = req.params.itemId
+         console.log(order.children)
+         console.log('target item: ' + targetItem)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: targetItem });
+
+
      } catch(err) {
          console.log(err);
      }

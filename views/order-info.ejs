@@ -4,7 +4,7 @@
 </nav>
 
 
-<div hx-swap-oob="outerHTML:#order-info" id="order-info" class="order-info col-6 g-0-md">
+<div hx-swap-oob="innerHTML:#order-inner" id="order-inner">
 
 <div class="container unpadSides">
   <div class="row-md">
@@ -18,7 +18,7 @@
           <tbody>
             <% for (let i = 0; i < order.children.length; i++) { %>
             <% let item = order.children[i] %>
-            <tr id="<%= item._id %>" class="<%=item.code%> <%= i === order.children.length -1 ? 'table-active' : ''%>">
+            <tr id="<%= item._id %>" class="<%=item.code%> <%= item._id == targetItem ? 'table-active' : ''%>">
             <td class="col-sm-4"><%= item.name %></td>
             <td class="col-sm-2"><%= currency %><%= item.price %></td>
             <td class="col-sm-2"><%= currency %><%= item.tax %></td>
@@ -43,3 +43,27 @@
 
 
         </div>
+
+
+
+
+
+                <% itemDetails = null %>
+                <% for (const c of order.children) { %>
+                <%     if (c._id == targetItem) { %>
+                <%         itemDetails = c %>
+                <%     } %>
+                <% } %>
+                <% if (itemDetails == null) { %>
+                <%     itemDetails = order.children.at(-1) %>
+                <% } %>
+                <div id = "details" hx-swap-oob="innerHTML:#details">
+                <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
+                <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
+                <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
+                <p class="details"><span class="fw-bold">Quantity: </span><span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
+                <p class="details"><span class="fw-bold">Price:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
+                <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
+                <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                </div>
+

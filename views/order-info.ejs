@@ -54,7 +54,7 @@
                 <%     } %>
                 <% } %>
                 <% if (itemDetails == null) { %>
-                <%     itemDetails = order.children.at(-1) %>
+                <%     itemDetails = order.children?.at(-1) || null %>
                 <% } %>
                 <div id = "details" hx-swap-oob="innerHTML:#details">
                 <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>

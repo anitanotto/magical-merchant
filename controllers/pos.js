@@ -283,10 +283,8 @@ module.exports = {
       }
       const currency = currencyTable[req.user.stripeCurrency]
       const newOrder = await Order.create({ user: req.user.id })
-      
-      const html = await ejs.renderFile("./views/order-info.ejs", { order: newOrder, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: null });
-        res.send(html)
-
+        console.log('completing order');    
+      res.render("order-info.ejs", { order: newOrder, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: null });
 
     } catch (err) {
         console.log(err);

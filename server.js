@@ -60,14 +60,7 @@ app.use("/", mainRoutes);
 app.use("/pos", posRoutes);
 app.use("/items", itemsRoutes);
 
-//Listen called in connectDB per cyclic.sh docs
 //Server Running
-
-    app.listen(process.env.PORT, () => {
-        console.log(`Server is running on Port ${process.env.PORT}`);
-    });
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
-};
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on Port ${process.env.PORT}`);
+});

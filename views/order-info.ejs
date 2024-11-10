@@ -1,5 +1,4 @@
-
-<nav hx-swap-oob="outerHTML:#order-id" id="order-id" hx-swap="none">
+<nav hx-swap-oob="outerHTML:#order-id" id="order-id">
     <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
 </nav>
 
@@ -66,4 +65,67 @@
                 <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
                 <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
                 </div>
+
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" type="submit" class="completeButton btn btn-success">Complete Order</button>
+                </form>
+
+
+
+
+
+                <div class="collapse" hx-swap-oob="outerHTML:#cashCollapse" id="cashCollapse" data-bs-parent=".modal-body">
+
+                <div class="my-1">
+                    <p><span class="fw-bold">Total due: </span><%= currency %><span id="grandTotal"><%= order.total %></span></p>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Cash received: <%= currency %></span>
+                        <input hx-put="/pos/calcChange/" hx-trigger="change, intersect" hx-swap="none" hx-vals='js:{cashVal: calculateValue()}'  id="cashReceived" type="number" class="form-control" step="0.01" min="0.00" max="9999.99" placeholder="0.00">
+                    </div>
+                    <p><span class="fw-bold">Change due: </span><%= currency %><span id="change">0.00</span></p>
+                </div>
+
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" type="submit" class="completeButton btn btn-success">Complete Order</button>
+                </form>
+
+
+
+
+
+
+
+
+
+                <div class="collapse" hx-swap-oob="outerHTML:#cardCollapse" id="cardCollapse" data-bs-parent=".modal-body">
+                <% if (stripeKey === true) { %>
+                <div class="row justify-content-center">
+                <p id="cardDisplay" class="text-center"></p>
+                <div id="qrDisplay"></div>
+                </div>
+                <button type="button" class="btn btn-secondary mx-auto d-block getQrCode">Generate Payment Code</button>
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" type="submit" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" id="cardComplete" class="hidden mx-auto btn btn-success">Complete Order</button>
+                </form>
+                <% } else { %>
+
+                <p>Your Stripe account has not been connected to Magical Merchant.</p>
+                <p>Create a new restricted API key from your <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard</a> with <span class="fw-bold">Write</span> permissions for <span class="fw-bold">Products</span>, <span class="fw-bold">Prices</span>, and <span class="fw-bold">Payment Links</span> and copy it below to enable card payments in Magical Merchant via Payment Links.</p>
+                <form hx-put="/pos/setStripeSettings" hx-swap="innerHTML">
+                
+                <div class="input-group flex-nowrap unpadSides">
+                <input type="text" name="stripePublicKey" class="form-control" placeholder="Stripe API Key">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+                </form>
+
+                <p class="mt-3">If you do not have a Stripe account, you can register <a href="https://dashboard.stripe.com/register" target="_blank">here</a>.</p>
+
+                <% } %>
+                </div>
+            </div>
 

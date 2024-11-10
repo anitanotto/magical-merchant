@@ -284,25 +284,64 @@ module.exports = {
       const currency = currencyTable[req.user.stripeCurrency]
       const newOrder = await Order.create({ user: req.user.id })
       
-      const html = await ejs.renderFile("./views/order-info.ejs", { order: newOrder, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: null });
-        res.send(html)
-
-
+      res.render("order-info.ejs", { order: newOrder, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: null });
     } catch (err) {
         console.log(err);
     }
   },
-  calcChange: async (req, res) => {
-      const user = await User.findOne({ _id: req.user.id })
-      let order = await Order.findOne({ user: req.user._id })
+  getFeed: async (req, res) => {
+    try {
+      const posts = await Pos.find().sort({ createdAt: "desc" }).lean();
+      res.render("feed.ejs", { posts: posts });
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  createPost: async (req, res) => {
+    try {
+      // Upload image to cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path);
 
-      const orderVal = Big(order.total)
-      const cashVal = Big(Number(req.body.cashVal))
-
-      if (Number(orderVal) <= Number(cashVal)) {
-            res.render("price.ejs", { change: cashVal.minus(orderVal).toFixed(2), total: '0.00' })
-      } else if (Number(orderVal) > Number(cashVal)) {
-            res.render("price.ejs", { change: '0.00', total: orderVal.minus(cashVal).toFixed(2) })
-      }
+      await Pos.create({
+        title: req.body.title,
+        image: result.secure_url,
+        cloudinaryId: result.public_id,
+        caption: req.body.caption,
+        likes: 0,
+        user: req.user.id,
+      });
+      console.log("Post has been added!");
+      res.redirect("/pos");
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  likePost: async (req, res) => {
+    try {
+      await Pos.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          $inc: { likes: 1 },
+        }
+      );
+      console.log("Likes +1");
+      res.redirect(`/post/${req.params.id}`);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  deletePost: async (req, res) => {
+    try {
+      // Find post by id
+      let post = await Pos.findById({ _id: req.params.id });
+      // Delete image from cloudinary
+      await cloudinary.uploader.destroy(post.cloudinaryId);
+      // Delete post from db
+      await Pos.remove({ _id: req.params.id });
+      console.log("Deleted Post");
+      res.redirect("/pos");
+    } catch (err) {
+      res.redirect("/pos");
+    }
   },
 };

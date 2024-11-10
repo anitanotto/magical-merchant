@@ -68,6 +68,7 @@ function updateItemActions() {
     const overrideButton = document.querySelector('#priceOverride')
     overrideButton.setAttribute('hx-put', `/pos/priceOverride/${orderId}/${itemId}/`)
     htmx.process(document.body)
+
 }
 
 
@@ -147,6 +148,7 @@ const grandTotal = document.querySelector("#grandTotal")
 const cashReceived = document.querySelector("#cashReceived")
 const changeDue = document.querySelector("#change")
 
+/*
 cashButton.addEventListener('click', getCashOrderTotal)
 
 function getCashOrderTotal() {
@@ -179,17 +181,25 @@ function calculateChange() {
     }
 
 }
+*/
+
+function calculateValue() {
+    return document.querySelector("#cashReceived").value
+}
 
 // Get QR Code
 
-document.querySelector('#getQrCode').addEventListener('click', getQrCode)
+const container = document.querySelector('#cardContainer')
+container.addEventListener('click', getQrCode)
+
 
 async function getQrCode() {
+    if (event.target.classList.contains("getQrCode")) {
     const id = document.querySelector('h1').id
-    const display = document.querySelector('#qrDisplay')
-    const qrButton = document.querySelector('#getQrCode')
-    const completeButton = document.querySelector('#cardComplete')
-    const textDisplay = document.querySelector('#cardDisplay')
+    const display = container.children[0].children[0].children[1] //document.querySelector('#qrDisplay')
+    const qrButton = event.target
+    const completeButton = container.children[0].children[2].children[0] //document.querySelector('#cardComplete')
+    const textDisplay = container.children[0].children[0].children[0] //document.querySelector('#cardDisplay')
     qrButton.classList.remove('d-block')
     qrButton.classList.add('hidden')
     display.classList.toggle('spinner-border')
@@ -209,4 +219,16 @@ async function getQrCode() {
     completeButton.classList.toggle('hidden')
     completeButton.classList.add('d-block')
     }
+    }
+}
+
+window.addEventListener('mousedown', updateAddItemForm)
+
+function updateAddItemForm() {
+    const orderId = document.querySelector('h1').id || 'x'
+
+    const addItemForm = document.querySelector('#addItemForm')
+    addItemForm.setAttribute('hx-put', `/pos/addItemToOrder/${orderId}/`)
+    htmx.process(document.body)
+
 }

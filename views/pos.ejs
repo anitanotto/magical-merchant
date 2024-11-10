@@ -38,7 +38,7 @@
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 
             <li>
-                <form action="/items/addItem" method="POST">
+                <form hx-swap="outerHTML" hx-post="/items/addItem">
                 <span>Add a New Item</span>
                
                 <input type="text" name="itemName" class="form-control" placeholder="Item Name">
@@ -208,7 +208,7 @@
 
 <div class="card removeBorder">
 <div class="card-body unpadSides">
-<form hx-put="/pos/addItemToOrder/<%= order._id %>" hx-swap="none">
+<form id="addItemForm" hx-put="/pos/addItemToOrder/<%= order._id %>" hx-swap="none">
     <!-- <label for="searchInput" class="form-label">Search</label> -->
     <div class="input-group flex-nowrap">
           <div id="autocomplete"></div>
@@ -263,35 +263,38 @@
                 <div class="collapse" id="cashCollapse" data-bs-parent=".modal-body">
 
                 <div class="my-1">
-                    <p><span class="fw-bold">Total due: </span><%= currency %><span id="grandTotal"></span></p>
+                    <p><span class="fw-bold">Total due: </span><%= currency %><span id="grandTotal"><%= order.total %></span></p>
                     <div class="input-group mb-3">
                         <span class="input-group-text">Cash received: <%= currency %></span>
-                        <input id="cashReceived" type="number" class="form-control" step="0.01" min="0.00" max="9999.99" placeholder="0.00">
+                        <input hx-put="/pos/calcChange/" hx-trigger="change, intersect" hx-swap="none" hx-vals='js:{cashVal: calculateValue()}'  id="cashReceived" type="number" class="form-control" step="0.01" min="0.00" max="9999.99" placeholder="0.00">
                     </div>
                     <p><span class="fw-bold">Change due: </span><%= currency %><span id="change">0.00</span></p>
                 </div>
 
 
-                <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
-                    <button type="submit" class="btn btn-success">Complete Order</button>
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" type="submit" class="btn btn-success">Complete Order</button>
                 </form>
                 </div>
+
+
+                <div id="cardContainer">
                 <div class="collapse" id="cardCollapse" data-bs-parent=".modal-body">
                 <% if (stripeKey === true) { %>
                 <div class="row justify-content-center">
                 <p id="cardDisplay" class="text-center"></p>
                 <div id="qrDisplay"></div>
                 </div>
-                <button type="button" class="btn btn-secondary mx-auto d-block" id="getQrCode">Generate Payment Code</button>
+                <button type="button" class="btn btn-secondary mx-auto d-block getQrCode">Generate Payment Code</button>
 
-                <form action="/pos/completeOrder/<%= order._id %>?_method=PUT" method="POST">
-                    <button type="submit" id="cardComplete" class="hidden mx-auto btn btn-success">Complete Order</button>
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" type="submit" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" id="cardComplete" class="hidden mx-auto btn btn-success">Complete Order</button>
                 </form>
                 <% } else { %>
 
                 <p>Your Stripe account has not been connected to Magical Merchant.</p>
                 <p>Create a new restricted API key from your <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard</a> with <span class="fw-bold">Write</span> permissions for <span class="fw-bold">Products</span>, <span class="fw-bold">Prices</span>, and <span class="fw-bold">Payment Links</span> and copy it below to enable card payments in Magical Merchant via Payment Links.</p>
-                <form action="/pos/setStripeSettings?_method=PUT" method="POST">
+                <form hx-put="/pos/setStripeSettings" hx-swap="innerHTML">
                 
                 <div class="input-group flex-nowrap unpadSides">
                 <input type="text" name="stripePublicKey" class="form-control" placeholder="Stripe API Key">
@@ -304,6 +307,7 @@
 
                 <% } %>
                 </div>
+            </div>
             </div>
 
             <div class="modal-footer">

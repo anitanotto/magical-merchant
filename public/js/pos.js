@@ -1,6 +1,6 @@
 
 // Highlights active row in the order details table and updates the item details with data from the new active row.
-const orderDetails = document.querySelector('#orderDetails')
+const orderDetails = document.querySelector('#order-inner')
 
 const markActiveRow = (function () {
     let lastActive = null
@@ -56,10 +56,19 @@ function updateItemDetails(name = '', price = '', tax = '', quantity = '', total
 function updateItemActions() {
     const orderId = document.querySelector('h1').id || 'x'
     const itemId = document.querySelector('h2').id || 'x'
-    document.querySelector('#voidItem').action = 
-`/pos/voidItem/${orderId}/${itemId}/?_method=PUT`
-    document.querySelector('#voidLine').action = `/pos/voidLine/${orderId}/${itemId}/?_method=PUT`
-    document.querySelector('#priceOverride').action = `/pos/priceOverride/${orderId}/${itemId}/?_method=PUT`
+
+    const voidButton = document.querySelector('#voidItem')
+    voidButton.setAttribute('hx-put', `/pos/voidItem/${orderId}/${itemId}/`)
+    htmx.process(document.body)
+
+    const lineButton = document.querySelector('#voidLine')
+    lineButton.setAttribute('hx-put', `/pos/voidLine/${orderId}/${itemId}/`)
+    htmx.process(document.body)
+
+    const overrideButton = document.querySelector('#priceOverride')
+    overrideButton.setAttribute('hx-put', `/pos/priceOverride/${orderId}/${itemId}/`)
+    htmx.process(document.body)
+
 }
 
 
@@ -139,6 +148,7 @@ const grandTotal = document.querySelector("#grandTotal")
 const cashReceived = document.querySelector("#cashReceived")
 const changeDue = document.querySelector("#change")
 
+/*
 cashButton.addEventListener('click', getCashOrderTotal)
 
 function getCashOrderTotal() {
@@ -171,17 +181,25 @@ function calculateChange() {
     }
 
 }
+*/
+
+function calculateValue() {
+    return document.querySelector("#cashReceived").value
+}
 
 // Get QR Code
 
-document.querySelector('#getQrCode').addEventListener('click', getQrCode)
+const container = document.querySelector('#cardContainer')
+container.addEventListener('click', getQrCode)
+
 
 async function getQrCode() {
+    if (event.target.classList.contains("getQrCode")) {
     const id = document.querySelector('h1').id
-    const display = document.querySelector('#qrDisplay')
-    const qrButton = document.querySelector('#getQrCode')
-    const completeButton = document.querySelector('#cardComplete')
-    const textDisplay = document.querySelector('#cardDisplay')
+    const display = container.children[0].children[0].children[1] //document.querySelector('#qrDisplay')
+    const qrButton = event.target
+    const completeButton = container.children[0].children[2].children[0] //document.querySelector('#cardComplete')
+    const textDisplay = container.children[0].children[0].children[0] //document.querySelector('#cardDisplay')
     qrButton.classList.remove('d-block')
     qrButton.classList.add('hidden')
     display.classList.toggle('spinner-border')
@@ -201,4 +219,16 @@ async function getQrCode() {
     completeButton.classList.toggle('hidden')
     completeButton.classList.add('d-block')
     }
+    }
+}
+
+window.addEventListener('mousedown', updateAddItemForm)
+
+function updateAddItemForm() {
+    const orderId = document.querySelector('h1').id || 'x'
+
+    const addItemForm = document.querySelector('#addItemForm')
+    addItemForm.setAttribute('hx-put', `/pos/addItemToOrder/${orderId}/`)
+    htmx.process(document.body)
+
 }

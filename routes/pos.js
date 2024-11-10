@@ -12,4 +12,6 @@ router.put("/payment/:orderId", posController.payment);
 router.put("/completeOrder/:orderId", posController.completeOrder);
 router.put("/setStripeSettings", posController.setStripeSettings);
 
+router.put("/calcChange/", posController.calcChange);
+
 module.exports = router;

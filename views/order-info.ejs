@@ -1,0 +1,131 @@
+<nav hx-swap-oob="outerHTML:#order-id" id="order-id">
+    <h1 id="<%= order._id %>"><div class="fw-bold">Order #<%= order._id %></div></h1>
+</nav>
+
+
+<div hx-swap-oob="innerHTML:#order-inner" id="order-inner">
+
+<div class="container unpadSides">
+  <div class="row-md">
+      <div class="panel panel-default">
+        <table id="orderDetails" class="table table-fixed table-hover">
+          <thead>
+            <tr>
+<th class="mobile-col col-sm-4">Item</th><th class="mobile-col col-sm-2">Price</th><th class="mobile-col col-sm-2">Tax</th><th class="mobile-col col-sm-2">Qty</th><th class="mobile-col col-sm-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < order.children.length; i++) { %>
+            <% let item = order.children[i] %>
+            <tr id="<%= item._id %>" class="<%=item.code%> <%= item._id == targetItem ? 'table-active' : ''%>">
+            <td class="col-sm-4"><%= item.name %></td>
+            <td class="col-sm-2"><%= currency %><%= item.price %></td>
+            <td class="col-sm-2"><%= currency %><%= item.tax %></td>
+            <td class="col-sm-2"><%= item.quantity %></td>
+            <td class="col-sm-2"><%= currency %><%= Big(item.price).add(Big(item.tax)).times(item.quantity).toFixed(2) %></td>
+            </tr>
+            <% } %>
+          </tbody>
+          <tfoot>
+            <tr class="d-flex justify-content-between">
+            <td class="tablefoot"><div class="fw-bold">Items:</div> <%= order.children.reduce((a,b) => a + b.quantity,0) %></td>
+            <td class="tablefoot"><div class="fw-bold">Subtotal:</div><%= currency %><%= order.subtotal %></td>
+            <td class="tablefoot"><div class="fw-bold">Tax:</div><%= currency %><%= order.tax %></td>
+            <td class="tablefoot"><div class="fw-bold">Balance:</div><%= currency %><span id="orderTotal"><%= order.total %></span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+  </div>
+</div>
+
+
+
+        </div>
+
+
+
+
+
+                <% itemDetails = null %>
+                <% for (const c of order.children) { %>
+                <%     if (c._id == targetItem) { %>
+                <%         itemDetails = c %>
+                <%     } %>
+                <% } %>
+                <% if (itemDetails == null) { %>
+                <%     itemDetails = order.children.at(-1) %>
+                <% } %>
+                <div id = "details" hx-swap-oob="innerHTML:#details">
+                <h2 id="<%= itemDetails ? itemDetails._id : ""%>"><div class="fw-bold">Item Details</div></h2>
+                <p class="details"><span class="fw-bold">Name: </span><span id="itemName"><%= itemDetails ? itemDetails.name : "" %></span></p>
+                <p class="details"><span class="fw-bold">Code: </span><span id="itemCode"><%= itemDetails ? itemDetails.code : "" %></span></p>
+                <p class="details"><span class="fw-bold">Quantity: </span><span id="itemQuantity"><%= itemDetails ? itemDetails.quantity : "" %></span></p>
+                <p class="details"><span class="fw-bold">Price:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemPrice"><%= itemDetails ? itemDetails.price : "" %></span></p>
+                <p class="details"><span class="fw-bold">Tax:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTax"><%= itemDetails ? itemDetails.tax : "" %></span></p>
+                <p class="details"><span class="fw-bold">Total:</span> <span class="currency"><%= itemDetails ? currency : '' %></span><span id="itemTotal"><%= itemDetails ? Big(itemDetails.price).plus(Big(itemDetails.tax)).times(Big(itemDetails.quantity)).toFixed(2) : "" %></span></p>
+                </div>
+
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" type="submit" class="completeButton btn btn-success">Complete Order</button>
+                </form>
+
+
+
+
+
+                <div class="collapse" hx-swap-oob="outerHTML:#cashCollapse" id="cashCollapse" data-bs-parent=".modal-body">
+
+                <div class="my-1">
+                    <p><span class="fw-bold">Total due: </span><%= currency %><span id="grandTotal"><%= order.total %></span></p>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Cash received: <%= currency %></span>
+                        <input hx-put="/pos/calcChange/" hx-trigger="change, intersect" hx-swap="none" hx-vals='js:{cashVal: calculateValue()}'  id="cashReceived" type="number" class="form-control" step="0.01" min="0.00" max="9999.99" placeholder="0.00">
+                    </div>
+                    <p><span class="fw-bold">Change due: </span><%= currency %><span id="change">0.00</span></p>
+                </div>
+
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" type="submit" class="completeButton btn btn-success">Complete Order</button>
+                </form>
+
+
+
+
+
+
+
+
+
+                <div class="collapse" hx-swap-oob="outerHTML:#cardCollapse" id="cardCollapse" data-bs-parent=".modal-body">
+                <% if (stripeKey === true) { %>
+                <div class="row justify-content-center">
+                <p id="cardDisplay" class="text-center"></p>
+                <div id="qrDisplay"></div>
+                </div>
+                <button type="button" class="btn btn-secondary mx-auto d-block getQrCode">Generate Payment Code</button>
+
+                <form>
+                    <button hx-put="/pos/completeOrder/<%= order._id %>" type="submit" data-bs-dismiss="modal" data-bs-toggle="collapse" data-bs-target=".collapse.show" id="cardComplete" class="hidden mx-auto btn btn-success">Complete Order</button>
+                </form>
+                <% } else { %>
+
+                <p>Your Stripe account has not been connected to Magical Merchant.</p>
+                <p>Create a new restricted API key from your <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard</a> with <span class="fw-bold">Write</span> permissions for <span class="fw-bold">Products</span>, <span class="fw-bold">Prices</span>, and <span class="fw-bold">Payment Links</span> and copy it below to enable card payments in Magical Merchant via Payment Links.</p>
+                <form hx-put="/pos/setStripeSettings" hx-swap="innerHTML">
+                
+                <div class="input-group flex-nowrap unpadSides">
+                <input type="text" name="stripePublicKey" class="form-control" placeholder="Stripe API Key">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+                </form>
+
+                <p class="mt-3">If you do not have a Stripe account, you can register <a href="https://dashboard.stripe.com/register" target="_blank">here</a>.</p>
+
+                <% } %>
+                </div>
+            </div>
+

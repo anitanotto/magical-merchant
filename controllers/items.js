@@ -38,7 +38,7 @@ module.exports = {
         user: req.user.id,
       });
       console.log("Post has been added!");
-      res.redirect("/pos");
+      res.render("add-item.ejs");
       } catch (err) {
         console.log(err)
       }

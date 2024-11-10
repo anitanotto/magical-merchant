@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Item = require("../models/Item");
 const Big = require('big.js')
 const QRcode = require('qrcode-svg')
+const ejs = require('ejs')
 
 module.exports = {
   getPos: async (req, res) => {
@@ -73,7 +74,15 @@ module.exports = {
           console.log('Failed to add item to order');
         }
 
-      res.redirect('/pos');
+      const user = await User.findOne({ _id: req.user.id })
+      const currencyTable = {
+            'usd' : '$'
+      }
+      const currency = currencyTable[user.stripeCurrency]
+        console.log(currency)
+        console.log(item._id)
+        console.log(typeof item._id)
+      res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: String(item._id) });
                 
 
     } catch (err) {
@@ -111,7 +120,18 @@ module.exports = {
             console.log('No item to void')
          }
 
-         res.redirect('/pos');
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         const targetItem = req.params.itemId
+         console.log(order.children)
+         console.log('target item: ' + targetItem)
+         console.log(typeof targetItem)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: targetItem });
+                
      } catch(err) {
          console.log(err);
      }
@@ -139,9 +159,15 @@ module.exports = {
             console.log('No items to void')
          }
 
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: String(order.children.at(-1)._id) });
 
 
-         res.redirect('/pos');
      } catch(err) {
          console.log(err);
      }
@@ -175,7 +201,18 @@ module.exports = {
             console.log('No items to override')
          }
 
-         res.redirect('/pos');
+         const user = await User.findOne({ _id: req.user.id })
+         const currencyTable = {
+                 'usd' : '$'
+         }
+         const currency = currencyTable[user.stripeCurrency]
+         console.log(currency)
+         const targetItem = req.params.itemId
+         console.log(order.children)
+         console.log('target item: ' + targetItem)
+         res.render("order-info.ejs", { order: order, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: targetItem });
+
+
      } catch(err) {
          console.log(err);
      }
@@ -231,7 +268,7 @@ module.exports = {
       user.stripeKey = req.body.stripePublicKey 
       user.save()
 
-      res.redirect('/pos')
+      res.send("<span>Updated Stripe Key Successfully!</span>")
 
   },
   completeOrder: async(req,res) => {
@@ -241,64 +278,31 @@ module.exports = {
       order.completed = true
       order.save()
 
-      res.redirect('/pos')
+      const currencyTable = {
+            'usd' : '$'
+      }
+      const currency = currencyTable[req.user.stripeCurrency]
+      const newOrder = await Order.create({ user: req.user.id })
+      
+      const html = await ejs.renderFile("./views/order-info.ejs", { order: newOrder, user: req.user, Big: Big, currency: currency, stripeKey: (req.user.stripeKey ? true : false), targetItem: null });
+        res.send(html)
+
+
     } catch (err) {
         console.log(err);
     }
   },
-  getFeed: async (req, res) => {
-    try {
-      const posts = await Pos.find().sort({ createdAt: "desc" }).lean();
-      res.render("feed.ejs", { posts: posts });
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  createPost: async (req, res) => {
-    try {
-      // Upload image to cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path);
+  calcChange: async (req, res) => {
+      const user = await User.findOne({ _id: req.user.id })
+      let order = await Order.findOne({ user: req.user._id })
 
-      await Pos.create({
-        title: req.body.title,
-        image: result.secure_url,
-        cloudinaryId: result.public_id,
-        caption: req.body.caption,
-        likes: 0,
-        user: req.user.id,
-      });
-      console.log("Post has been added!");
-      res.redirect("/pos");
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  likePost: async (req, res) => {
-    try {
-      await Pos.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          $inc: { likes: 1 },
-        }
-      );
-      console.log("Likes +1");
-      res.redirect(`/post/${req.params.id}`);
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  deletePost: async (req, res) => {
-    try {
-      // Find post by id
-      let post = await Pos.findById({ _id: req.params.id });
-      // Delete image from cloudinary
-      await cloudinary.uploader.destroy(post.cloudinaryId);
-      // Delete post from db
-      await Pos.remove({ _id: req.params.id });
-      console.log("Deleted Post");
-      res.redirect("/pos");
-    } catch (err) {
-      res.redirect("/pos");
-    }
+      const orderVal = Big(order.total)
+      const cashVal = Big(Number(req.body.cashVal))
+
+      if (Number(orderVal) <= Number(cashVal)) {
+            res.render("price.ejs", { change: cashVal.minus(orderVal).toFixed(2), total: '0.00' })
+      } else if (Number(orderVal) > Number(cashVal)) {
+            res.render("price.ejs", { change: '0.00', total: orderVal.minus(cashVal).toFixed(2) })
+      }
   },
 };
